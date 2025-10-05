@@ -1,0 +1,34 @@
+
+---FROM HERE---
+BASE:
+install python
+AI:
+install ollama
+run "ollama pull mistral:7b-instruct-v0.2-q4_0" (4 bit quantized version)
+REDDIT:
+pip install requests
+TTS:
+pip install piper-tts (if it has dependecies problems add "--no-deps", then also run "pip install onnxruntime", but before that check how to do at https://github.com/rhasspy/piper-phonemize/issues/41)
+---TO HERE: IGNORE---
+
+sudo apt install ffmpeg #not necessary (?)
+
+REMEMBER: EXTRACT env ENVIRONMENT TO FUNCTION
+
+Install conda:
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm ~/miniconda3/miniconda.sh
+source ~/miniconda3/bin/activate
+conda create -n aligner -c conda-forge montreal-forced-aligner
+
+or if avaiable (last step only) (preferrable):
+conda env create -f environment.yml
+
+Enable Piper executable:
+chmod +x /home/valerio/Scrivania/content-farm/piper/piper #change this to the right path
+
+REMEMBER: instead to do this, use environments: before always run:
+source ~/miniconda3/bin/activate
+conda activate aligner
