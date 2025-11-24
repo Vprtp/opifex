@@ -1,4 +1,4 @@
-name: aligner
+name: opifex
 channels:
   - conda-forge
   - defaults
@@ -288,4 +288,4 @@ dependencies:
       - typing-extensions==4.14.1
       - websocket-client==1.8.0
       - wsproto==1.2.0
-prefix: /home/valerio/miniconda3/envs/aligner
+prefix: /home/valerio/miniconda3/envs/opifex
