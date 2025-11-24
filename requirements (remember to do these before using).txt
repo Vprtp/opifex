@@ -13,7 +13,7 @@ pip install piper-tts (if it has dependecies problems add "--no-deps", then also
 
 sudo apt install ffmpeg #not necessary (?)
 
-REMEMBER: EXTRACT env ENVIRONMENT TO FUNCTION
+Export and import conda environment:
 
 Install conda:
 mkdir -p ~/miniconda3
@@ -21,7 +21,7 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/
 bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
 rm ~/miniconda3/miniconda.sh
 source ~/miniconda3/bin/activate
-conda create -n aligner -c conda-forge montreal-forced-aligner
+conda create -n opifex -c conda-forge montreal-forced-aligner
 
 or if avaiable (last step only) (preferrable):
 conda env create -f environment.yml
@@ -29,6 +29,10 @@ conda env create -f environment.yml
 Enable Piper executable:
 chmod +x /home/valerio/Scrivania/content-farm/piper/piper #change this to the right path
 
+For PyQt6 compatibility (X11 libraries):
+sudo apt update
+sudo apt install libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0
+
 REMEMBER: instead to do this, use environments: before always run:
 source ~/miniconda3/bin/activate
-conda activate aligner
+conda activate opifex
