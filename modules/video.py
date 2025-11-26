@@ -38,7 +38,8 @@ class FFmpeg:
             "-of", "default=noprint_wrappers=1:nokey=1", 
             path],
             capture_output=True,
-            text=True
+            text=True,
+            check=True
         )
         return float(result.stdout.strip())
     
@@ -51,7 +52,7 @@ class FFmpeg:
             "-show_entries", "stream=width,height", 
             "-of", "csv=p=0", 
             path
-        ], capture_output=True, text=True)
+        ], capture_output=True, text=True, check=True)
         result = result.stdout.strip().split(",")
         return (int(result[0]),int(result[1]))
 
@@ -69,7 +70,7 @@ class FFmpeg:
             path
         ]
 
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
 
         # Filter output lines to keep only numeric timestamps
         timestamps = []
@@ -189,8 +190,8 @@ class FFmpeg:
             "-f", "concat", 
             "-i", textFile, 
             "-c", "copy",
-            endPath
-        ])
+            endPath,
+        ], check=True)
         if isTemp:
             tempFiles.append(endPath)
 
@@ -206,7 +207,7 @@ class FFmpeg:
                 "-c:v", "libx264", 
                 "-c:a", "aac",
                 endPath
-            ])
+            ], check=True)
         else:
             keyframes:list[float] = FFmpeg.getKeyframes(ogPath)
             if roundUpOrDown[0]:
@@ -225,7 +226,7 @@ class FFmpeg:
                 "-i", ogPath,
                 "-c", "copy",
                 endPath
-            ])
+            ], check=True)
         
         if isTemp:
             tempFiles.append(endPath)
@@ -242,7 +243,7 @@ class FFmpeg:
             "-map", "1:a:0",
             "-shortest", 
             endPath
-        ])
+        ], check=True)
         if isTemp:
             tempFiles.append(endPath)
 
@@ -298,7 +299,7 @@ class FFmpeg:
             "-filter_complex", filter_complex,
             "-c:a", "copy",
             ovPath
-        ])
+        ], check=True)
 
         tempFiles.append(ovPath)
 
@@ -320,7 +321,7 @@ class FFmpeg:
             "-vf", f"subtitles='{assFile}':fontsdir='{os.path.dirname(theme.font)}'",
             "-c:a", "copy",
             endPath
-        ])
+        ], check=True)
         if isTemp:
             tempFiles.append(endPath)
 

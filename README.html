@@ -5,36 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opifex - Manual</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1, h2, h3, h4, h5, h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
-        h1 { font-size: 2em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
-        h2 { font-size: 1.5em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
-        code { background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-size: 110%;}
-        pre { background: #f6f8fa; padding: 16px; border-radius: 6px; overflow: auto; }
-        pre code { background: none; padding: 0; }
-        blockquote { margin: 0; padding-left: 16px; border-left: 4px solid #ddd; color: #666; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-        th { background: #f6f8fa; font-weight: 600; }
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+h1, h2, h3, h4, h5, h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
+h1 { font-size: 2em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+h2 { font-size: 1.5em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+code { background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-size: 110%;}
+pre { background: #f6f8fa; padding: 16px; border-radius: 6px; overflow: auto; }
+pre code { background: none; padding: 0; }
+blockquote { margin: 0; padding-left: 16px; border-left: 4px solid #ddd; color: #666; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+th { background: #f6f8fa; font-weight: 600; }
+
     </style>
 </head>
-<body>
-<h1>Opifex</h1>
+<body class="markdown-body">
+    <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Manual for version <code>0.1.0</code>.</p>
-<p><a href="source/img/logo.png"></a></p><div style="text-align: center"><a href="source/img/logo.png"><img src="source/img/logo.png" width="200"></a></div><p></p>
+<p><a href="source/img/logo.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/logo.png"><img src="source/img/logo.png" width="200" style="max-width: 100%;"></a></div><p></p>
 <p><em>Opifex</em> is a modular tool designed for automated content creation (videos, images, texts, audios, and more, depending on which modules are installed and used).</p>
-<h2>Installation</h2>
+<div class="markdown-heading"><h2 class="heading-element">Installation</h2><a id="user-content-installation" class="anchor" aria-label="Permalink: Installation" href="#installation"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>After downloading the repository, Opifex can be properly set up by running <code>bash install.sh</code> in the main directory.</p>
-<p>The script will download various assets that are used by the program (or by the default modules) that are too heavy to be hosted on GitHub and it will set up a <em>Conda</em> environment for the program (based on <code>environment.yml</code>), as well as install Conda (precisely <em>Miniconda3</em>) if no Conda version was found on the system.<br>Opifex requires this environment to function properly, as some Conda-exclusive programs (such as <em>Montreal Forced Aligner</em>) are being used.</p>
+<p>The script will download various assets that are used by the program (or by the default modules) that are too heavy to be hosted on GitHub and it will set up a <em>Conda</em> environment for the program (based on <code>environment.yml</code>), as well as install Conda (precisely <em>Miniconda3</em>) if no Conda version was found on the system.<br>
+Opifex requires this environment to function properly, as some Conda-exclusive programs (such as <em>Montreal Forced Aligner</em>) are being used.</p>
 <p>Opifex can then be started by running <code>bash main.sh</code> in the main directory.</p>
-<p>(On both cases, please <strong>avoid</strong> running the scripts in other methods, for example <code>./main.sh</code>, since this way of execution might cause problems.)</p>
+<p>(In both cases, please <strong>avoid</strong> running the scripts in other methods, for example <code>./main.sh</code>, since this way of execution might cause problems.)</p>
 <p>So, as of now, <strong>Opifex runs exclusively on Linux</strong>.</p>
-<h2>Modules</h2>
-<h3>What are modules?</h3>
-<p><strong>Modules</strong> are independent pieces of code, each with a specific function, that can be executed through Opifex.<br>Modules are Python scripts that can be found in the <code>modules</code> direcory and that contain the <code>basemodule.BaseModule</code> class.<br>They are imported upon startup and can be executed, with proper parameters, using <code>modules.executeModule()</code>, returning a class of type <code>basemodule.ModuleResultType</code>.</p>
+<div class="markdown-heading"><h2 class="heading-element">Modules</h2><a id="user-content-modules" class="anchor" aria-label="Permalink: Modules" href="#modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h3 class="heading-element">What are modules?</h3><a id="user-content-what-are-modules" class="anchor" aria-label="Permalink: What are modules?" href="#what-are-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p><strong>Modules</strong> are independent pieces of code, each with a specific function, that can be executed through Opifex.<br>
+Modules are Python scripts that can be found in the <code>modules</code> directory and that contain the <code>basemodule.BaseModule</code> class.<br>
+They are imported upon startup and can be executed, with proper parameters, using <code>modules.executeModule()</code>, returning a class of type <code>basemodule.ModuleResultType</code>.</p>
 <p>Based on this, in reality, the main program (for now) still just works as a layer for the user to call and interact with modules, which actually do the content creation operations.</p>
-<p><strong>Be careful</strong> when you download modules made by other people!<br>By executing a module, you will be running code on your machine like any other program, so be certain that the downloaded script doesn't contain any malicious code.</p>
-<h3>Default modules</h3>
+<p><strong>Be careful</strong> when you download modules made by other people!<br>
+By executing a module, you will be running code on your machine like any other program, so be certain that the downloaded script doesn't contain any malicious code.</p>
+<div class="markdown-heading"><h3 class="heading-element">Default modules</h3><a id="user-content-default-modules" class="anchor" aria-label="Permalink: Default modules" href="#default-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Many modules are already part of Opifex by default, but everyone is free to write their own modules or download other community-made modules, by just placing them inside the <code>modules</code> directory. Here is a list of the preinstalled modules:</p>
 <table>
 <thead>
@@ -47,10 +60,11 @@
 <th><strong>Dependencies</strong></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><em>RedditVideoGenerator</em></td>
 <td>reddit-video-generator.py</td>
-<td>Module that generates a video, or multiple videos, based the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
+<td>Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
 <td>url-(str) commentsOrDesc-(bool) accountName-(str)</td>
 <td>paths-(list[str])</td>
 <td>Reddit TTS Aligner VideoGenerator URLunshortener</td>
@@ -103,9 +117,11 @@
 <td>destination-(str)</td>
 <td>/</td>
 </tr>
-</tbody></table>
-<h3>Creating modules</h3>
-<p>Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized <code>basemodule.Basemodule</code> class at the end of it, so that it can be recognized by Opifex.<br>Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.</p>
+</tbody>
+</table>
+<div class="markdown-heading"><h3 class="heading-element">Creating modules</h3><a id="user-content-creating-modules" class="anchor" aria-label="Permalink: Creating modules" href="#creating-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized <code>basemodule.BaseModule</code> class at the end of it, so that it can be recognized by Opifex.<br>
+Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.</p>
 <pre><code>class BaseModule:
     def __init__(self):
         self.name = ABC
@@ -131,10 +147,10 @@
     def __str__(self):
         return f"ModuleResultType: exception &lt;{str(self.exception)}&gt; data &lt;{str(self.data)}&gt;"
 </code></pre>
-<h2>GUI mode</h2>
+<div class="markdown-heading"><h2 class="heading-element">GUI mode</h2><a id="user-content-gui-mode" class="anchor" aria-label="Permalink: GUI mode" href="#gui-mode"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Opifex can run in an intuitive <strong>GUI mode</strong>:</p>
-<p><a href="source/img/opifex-gui.png"></a></p><div style="text-align: center"><a href="source/img/opifex-gui.png"><img src="source/img/opifex-gui.png" width="600"></a></div><p></p>
-<p>The interface is devided in specialized sections:</p>
+<p><a href="source/img/opifex-gui.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/opifex-gui.png"><img src="source/img/opifex-gui.png" width="600" style="max-width: 100%;"></a></div><p></p>
+<p>The interface is divided in specialized sections:</p>
 <ul>
 <li>On the left, there's a list of all loaded <strong>modules</strong>. Each module can be inspected by <em>double clicking</em>. Modules can be reloaded by pressing the <code>Reload</code> button.</li>
 <li>On the right, details of the <strong>selected module</strong> are displayed. You can <em>execute</em> the selected module by pressing the <code>Execute</code> button, after having provided all of the selected module's parameters.</li>
@@ -142,16 +158,23 @@
 <li>On the top, a <strong>toolbar</strong> allows you to have quick access to the <em>configurations file</em>, to this page and to a quick <em>info page</em>.</li>
 </ul>
 <p>Output from <strong>executed modules</strong> will be printed to console (at least for now).</p>
-<h2>Credits and info</h2>
-<p>All code for Opifex has been written by <strong>prtp</strong> (<a href="https://github.com/Vprtp">Vprtp</a> on GitHub).<br>Opifex is distributed under the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html">GNU GPL v3</a> license.<br>To function properly, Opifex uses the following libraries/software (which are included with the installation of this program):</p>
+<div class="markdown-heading"><h2 class="heading-element">Credits and info</h2><a id="user-content-credits-and-info" class="anchor" aria-label="Permalink: Credits and info" href="#credits-and-info"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>All code for Opifex has been written by <strong>prtp</strong> (<a href="https://github.com/Vprtp">Vprtp</a> on GitHub).<br>
+Opifex is distributed under the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html" rel="nofollow">GNU GPL v3</a> license.<br>
+To function properly, Opifex uses the following libraries/software (which are included with the installation of this program):</p>
 <ul>
-<li><em>PyQt6</em> for its graphic functionalities</li>
-<li><em>PiperTTS</em> for text-to-speech</li>
-<li><em>Montreal Forced Aligner</em> to align the generated TTS with its transcript and create a subtitles file</li>
-<li><em>FFmpeg</em> to edit and compose videos</li>
-<li><em>Selenium</em> to capture web pages</li>
+<li>
+<em>PyQt6</em> for its graphic functionalities</li>
+<li>
+<em>PiperTTS</em> for text-to-speech</li>
+<li>
+<em>Montreal Forced Aligner</em> to align the generated TTS with its transcript and create a subtitles file</li>
+<li>
+<em>FFmpeg</em> to edit and compose videos</li>
+<li>
+<em>Selenium</em> to capture web pages</li>
 </ul>
-<p>Opifex (which, btw, means "artisan, manifacturer" in Latin) is just a hobby project, so don't expect it to be top-quality software However, I still plan to add a lot of other things to it in future: first of all, a slighly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.</p>
+<p>Opifex (from the Latin for "artisan" or "manufacturer") is a hobby project, so please be aware it may not yet be production-grade software. However, I still plan to add a lot of other things to it in future: first of all, a slighly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.</p>
 <p>Thanks for your attention.</p>
 
 </body>

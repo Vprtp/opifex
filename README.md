@@ -15,7 +15,7 @@ Opifex requires this environment to function properly, as some Conda-exclusive p
 
 Opifex can then be started by running `bash main.sh` in the main directory.
 
-(On both cases, please **avoid** running the scripts in other methods, for example `./main.sh`, since this way of execution might cause problems.)
+(In both cases, please **avoid** running the scripts in other methods, for example `./main.sh`, since this way of execution might cause problems.)
 
 So, as of now, **Opifex runs exclusively on Linux**.
 
@@ -24,7 +24,7 @@ So, as of now, **Opifex runs exclusively on Linux**.
 ### What are modules?
 
 **Modules** are independent pieces of code, each with a specific function, that can be executed through Opifex.  
-Modules are Python scripts that can be found in the `modules` direcory and that contain the `basemodule.BaseModule` class.  
+Modules are Python scripts that can be found in the `modules` directory and that contain the `basemodule.BaseModule` class.  
 They are imported upon startup and can be executed, with proper parameters, using `modules.executeModule()`, returning a class of type `basemodule.ModuleResultType`.
 
 Based on this, in reality, the main program (for now) still just works as a layer for the user to call and interact with modules, which actually do the content creation operations.
@@ -38,7 +38,7 @@ Many modules are already part of Opifex by default, but everyone is free to writ
 
 | **Module name**        | **File name**             | **Description**                                                                                                                                                                                  | **Required parameters**                                                        | **Returned values**                                              | **Dependencies**                                 |
 |------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------|
-| _RedditVideoGenerator_ | reddit-video-generator.py | Module that generates a video, or multiple videos, based the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)   | url-(str) commentsOrDesc-(bool) accountName-(str)                              | paths-(list[str])                                                | Reddit TTS Aligner VideoGenerator URLunshortener |
+| _RedditVideoGenerator_ | reddit-video-generator.py | Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)   | url-(str) commentsOrDesc-(bool) accountName-(str)                              | paths-(list[str])                                                | Reddit TTS Aligner VideoGenerator URLunshortener |
 | _URLunshortener_       | unshortenURL.py           | Module that returns the final URL from redirections by a given one (thus 'unshortening' shortened URLs)                                                                                          | url-(str) rmpars-(bool)                                                        | url-(str)                                                        | /                                                |
 | _Reddit_               | reddit.py                 | Module for fetching reddit posts.                                                                                                                                                                | url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int)                     | title-(str) description-(str) upvotes-(int) comments-(list[str]) | Screenshot                                       |
 | _TTS_                  | tts.py                    | Module for generating speech from a given title and text.                                                                                                                                        | title-(str) text-(str)                                                         | titleDestination-(str) textDestination-(str)                     | /                                                |
@@ -48,7 +48,7 @@ Many modules are already part of Opifex by default, but everyone is free to writ
 
 ### Creating modules
 
-Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized `basemodule.Basemodule` class at the end of it, so that it can be recognized by Opifex.  
+Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized `basemodule.BaseModule` class at the end of it, so that it can be recognized by Opifex.  
 Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.
 
 ```
@@ -85,7 +85,7 @@ Opifex can run in an intuitive **GUI mode**:
 
 [<div style="text-align: center"><img src="source/img/opifex-gui.png" width="600"/></div>](source/img/opifex-gui.png)
 
-The interface is devided in specialized sections:
+The interface is divided in specialized sections:
 * On the left, there's a list of all loaded **modules**. Each module can be inspected by _double clicking_. Modules can be reloaded by pressing the `Reload` button.
 * On the right, details of the **selected module** are displayed. You can _execute_ the selected module by pressing the `Execute` button, after having provided all of the selected module's parameters.
 * On the bottom, a **console** shows all output from modules and Opifex itself (after startup, all `stdout` and `stderr` calls get redirected here).
@@ -105,6 +105,6 @@ To function properly, Opifex uses the following libraries/software (which are in
 * _Selenium_ to capture web pages
 
 
-Opifex (which, btw, means "artisan, manifacturer" in Latin) is just a hobby project, so don't expect it to be top-quality software However, I still plan to add a lot of other things to it in future: first of all, a slighly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.
+Opifex (from the Latin for "artisan" or "manufacturer") is a hobby project, so please be aware it may not yet be production-grade software. However, I still plan to add a lot of other things to it in future: first of all, a slighly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.
 
 Thanks for your attention.
