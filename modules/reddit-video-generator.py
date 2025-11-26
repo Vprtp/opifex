@@ -45,7 +45,7 @@ def generate(url:str, commsOrDesc:bool, accountName:str):
 class RedditVideoGenerator(BaseModule):
     def __init__(self):
         self.name = "RedditVideoGenerator"
-        self.description = "Module that generates a video, or multiple videos, based the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)\n\nParameters:\n-url: URL to the Reddit post\n-commentsOrDesc: whether to generate multiple videos based on the comments (True) or to generate one video from the post's description (False)\n-accountName: credits that will be shown in the video"
+        self.description = "Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)\n\nParameters:\n-url: URL to the Reddit post\n-commentsOrDesc: whether to generate multiple videos based on the comments (True) or to generate one video from the post's description (False)\n-accountName: credits that will be shown in the video"
         self.requiredArgs = [("url",str),("commentsOrDesc",bool),("accountName",str)]
         self.returnedDataTypes = [("paths",list[str])]
         self.dependencies = ["Reddit","TTS","Aligner","VideoGenerator","URLunshortener"]
