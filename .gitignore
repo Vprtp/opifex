@@ -6,3 +6,6 @@ __pycache__
 modules/__pycache__
 .vscode
 devtools/r2_credentials.env
+devtools/copy-repos.sh
+!source/img/logo.png
+!source/img/opifex-gui.png
