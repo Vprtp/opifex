@@ -5,7 +5,6 @@ import re
 import config
 from basemodule import BaseModule, ModuleResultType
 
-# WARNING: THIS PROGRAM CURRENTLY ONLY WORKS ON LINUX
 p = os.path.abspath(__file__).replace(os.path.basename(__file__),"")
 
 piperLocation: str = config.piperLocation
@@ -202,7 +201,7 @@ class TTS(BaseModule):
         self.returnedDataTypes = [("titleDestination",str),("textDestination",str)]
         self.dependencies = []
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             paths = generate(kwargs["title"],kwargs["text"])
             return ModuleResultType(None,{"titleDestination":paths[0],"textDestination":paths[1]})

@@ -50,7 +50,7 @@ class RedditVideoGenerator(BaseModule):
         self.returnedDataTypes = [("paths",list[str])]
         self.dependencies = ["Reddit","TTS","Aligner","VideoGenerator","URLunshortener"]
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             paths:list[str]= generate(kwargs["url"],kwargs["commentsOrDesc"],kwargs["accountName"])
             return ModuleResultType(None,{"paths":paths})

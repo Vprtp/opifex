@@ -21,6 +21,7 @@ class BaseModule:
         return f"Module <{self.name}>: {self.description.split("\n")[0]}" #prints first line of description, which should always be just the summary. hopefully.
     
     @abstractmethod
-    def execute(self, **kwargs) -> ModuleResultType:
+    def execute(self, version:str, **kwargs) -> ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
         """Execute the module and return results"""
         pass
+

@@ -157,7 +157,7 @@ class Screenshot(BaseModule):
         self.returnedDataTypes = [("destination",str)]
         self.dependencies = []
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             a:str = process_html_to_image(kwargs["template"],kwargs["data"],kwargs["size"])
             return ModuleResultType(None,{"destination":a})
