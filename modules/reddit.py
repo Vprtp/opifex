@@ -68,7 +68,7 @@ class Reddit(BaseModule):
         self.returnedDataTypes = [("title",str),("description",str),("upvotes",int),("comments",list[str])]
         self.dependencies = ["Screenshot"]
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             json = getJSON(kwargs["url"])
             title:str = getTitle(json)

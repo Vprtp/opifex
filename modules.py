@@ -3,8 +3,8 @@ import importlib.util
 import os
 import sys
 import inspect
+from main import VERSION
 
-# WARNING: THIS PROGRAM CURRENTLY ONLY WORKS ON LINUX
 p = os.path.abspath(__file__).replace(os.path.basename(__file__),"")
 
 modulesDir:str = p+"modules/"
@@ -51,7 +51,7 @@ def loadModules(dir:str = modulesDir, checkForDependencies:bool = True) -> None:
                 raise ModuleNotFoundError(f"Module '{d[0]}', required by '{d[1]}', was not found in the modules folder.")          
 
 def executeModule(name:str, **kwargs) -> ModuleResultType:
-    return modules[name].execute(**kwargs)
+    return modules[name].execute(VERSION,**kwargs)
 
 if __name__ == "__main__":
     loadModules()

@@ -10,8 +10,6 @@ import config
 from config import Theme
 from basemodule import BaseModule, ModuleResultType
 
-# WARNING: THIS PROGRAM CURRENTLY ONLY WORKS ON LINUX
-
 accountName:str = config.accountName
 
 subtitlesTheme:Theme = config.subtitlesTheme
@@ -391,7 +389,7 @@ class VideoGenerator(BaseModule):
         self.returnedDataTypes = []
         self.dependencies = []
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             computeVideo(kwargs["destination"],kwargs["title"],kwargs["subtitles"],kwargs["titleAudio"],kwargs["textAudio"])
             return ModuleResultType(None,{})

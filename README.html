@@ -38,7 +38,8 @@ th { background: #f6f8fa; font-weight: 600; }
 Opifex requires this environment to function properly, as some Conda-exclusive programs (such as <em>Montreal Forced Aligner</em>) are being used.</p>
 <p>Opifex can then be started by running <code>bash main.sh</code> in the main directory.</p>
 <p>(In both cases, please <strong>avoid</strong> running the scripts in other methods, for example <code>./main.sh</code>, since this way of execution might cause problems.)</p>
-<p>So, as of now, <strong>Opifex runs exclusively on Linux</strong>.</p>
+<p>So, as of now, <strong>Opifex runs exclusively on Linux</strong>.<br>
+Also, the installer script currently only supports Debian-based distributions (or any distribution running <em>APT</em>): Opifex is still supported for other distributions, but it requires manual installation.</p>
 <div class="markdown-heading"><h2 class="heading-element">Modules</h2><a id="user-content-modules" class="anchor" aria-label="Permalink: Modules" href="#modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <div class="markdown-heading"><h3 class="heading-element">What are modules?</h3><a id="user-content-what-are-modules" class="anchor" aria-label="Permalink: What are modules?" href="#what-are-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p><strong>Modules</strong> are independent pieces of code, each with a specific function, that can be executed through Opifex.<br>
@@ -134,7 +135,7 @@ Be careful to put all your code in functions: anything outside them will be run 
         return f"Module &lt;{self.name}&gt;: {self.description.split("\n")[0]}" #prints first line of description, which should always be just the summary. hopefully.
     
     @abstractmethod
-    def execute(self, **kwargs) -&gt; ModuleResultType:
+    def execute(self, version:str, **kwargs) -&gt; ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
         """Execute the module and return results"""
         pass
 </code></pre>
@@ -160,7 +161,7 @@ Be careful to put all your code in functions: anything outside them will be run 
 <p>Output from <strong>executed modules</strong> will be printed to console (at least for now).</p>
 <div class="markdown-heading"><h2 class="heading-element">Credits and info</h2><a id="user-content-credits-and-info" class="anchor" aria-label="Permalink: Credits and info" href="#credits-and-info"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>All code for Opifex has been written by <strong>prtp</strong> (<a href="https://github.com/Vprtp">Vprtp</a> on GitHub).<br>
-Opifex is distributed under the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html" rel="nofollow">GNU GPL v3</a> license.<br>
+Opifex is distributed under the <a href="LICENSE">GNU GPL v3</a> license.<br>
 To function properly, Opifex uses the following libraries/software (which are included with the installation of this program):</p>
 <ul>
 <li>

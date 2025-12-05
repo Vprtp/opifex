@@ -17,7 +17,7 @@ class URLunshortener(BaseModule):
         self.returnedDataTypes = [("url",str)]
         self.dependencies = []
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             url:str = getUrl(kwargs["url"],kwargs["rmpars"])
             return ModuleResultType(None,{"url":url})

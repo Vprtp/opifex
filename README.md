@@ -17,7 +17,8 @@ Opifex can then be started by running `bash main.sh` in the main directory.
 
 (In both cases, please **avoid** running the scripts in other methods, for example `./main.sh`, since this way of execution might cause problems.)
 
-So, as of now, **Opifex runs exclusively on Linux**.
+So, as of now, **Opifex runs exclusively on Linux**.  
+Also, the installer script currently only supports Debian-based distributions (or any distribution running _APT_): Opifex is still supported for other distributions, but it requires manual installation.
 
 ## Modules
 
@@ -64,7 +65,7 @@ class BaseModule:
         return f"Module <{self.name}>: {self.description.split("\n")[0]}" #prints first line of description, which should always be just the summary. hopefully.
     
     @abstractmethod
-    def execute(self, **kwargs) -> ModuleResultType:
+    def execute(self, version:str, **kwargs) -> ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
         """Execute the module and return results"""
         pass
 ```
@@ -96,7 +97,7 @@ Output from **executed modules** will be printed to console (at least for now).
 ## Credits and info
 
 All code for Opifex has been written by **prtp** ([Vprtp](https://github.com/Vprtp) on GitHub).  
-Opifex is distributed under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0-standalone.html) license.  
+Opifex is distributed under the [GNU GPL v3](LICENSE) license.  
 To function properly, Opifex uses the following libraries/software (which are included with the installation of this program):
 * _PyQt6_ for its graphic functionalities
 * _PiperTTS_ for text-to-speech

@@ -176,7 +176,7 @@ class Aligner(BaseModule):
         self.returnedDataTypes = [("textgridOutput",str),("srtOutput",str)]
         self.dependencies = []
     
-    def execute(self, **kwargs):
+    def execute(self, version:str, **kwargs):
         try:
             paths = generateSubtitles(kwargs["audio"],kwargs["transcript"],kwargs["output"])
             return ModuleResultType(None,{"textgridOutput":paths[0],"srtOutput":paths[1]})
