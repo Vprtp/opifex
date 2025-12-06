@@ -8,6 +8,7 @@ p = os.path.abspath(__file__).replace(os.path.basename(__file__),"") #DO NOT cha
 windowSize:tuple[int,int] = (1000,800)
 manual:str = p+"README.html"
 icon:str = p+"source/img/logo.png"
+style:str = p+"source/qt/style.qss"
 tempFolder:str = p+"temp/"
 
 #DEFAULT MODULES CONFIGS

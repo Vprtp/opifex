@@ -15,6 +15,10 @@ def clearTemp(dir:str=config.tempFolder):
     shutil.rmtree(dir)
     os.mkdir(dir)
 
+def loadStylesheet(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
 def openFileWithDefaultEditor(file_path):
     if sys.platform == "win32":
         os.startfile(file_path)
@@ -632,7 +636,9 @@ def main(mode:str, gui:bool):
         case "single":
             if gui:
                 app = QtWidgets.QApplication([])
-
+                
+                app.setStyleSheet(loadStylesheet(config.style))                
+                
                 widget = MainWindow()
                 widget.show()
 
