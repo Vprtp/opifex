@@ -68,7 +68,7 @@ By executing a module, you will be running code on your machine like any other p
 <td>Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
 <td>url-(str) commentsOrDesc-(bool) accountName-(str)</td>
 <td>paths-(list[str])</td>
-<td>Reddit TTS Aligner VideoGenerator URLunshortener</td>
+<td>Reddit SimpleVideoGenerator URLunshortener</td>
 </tr>
 <tr>
 <td><em>URLunshortener</em></td>
@@ -117,6 +117,14 @@ By executing a module, you will be running code on your machine like any other p
 <td>template-(str) data-(dict) size-(tuple[int,int])</td>
 <td>destination-(str)</td>
 <td>/</td>
+</tr>
+<tr>
+<td><em>SimpleVideoGenerator</em></td>
+<td>simple-video-generator.py</td>
+<td>Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
+<td>content-(dict[str,str]) accountName-(str)</td>
+<td>paths-(list[str])</td>
+<td>TTS Aligner VideoGenerator</td>
 </tr>
 </tbody>
 </table>

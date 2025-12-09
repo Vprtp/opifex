@@ -8,7 +8,7 @@ from typing import get_origin, get_args
 import subprocess
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.0" #current version to show and use in the project, [MAIN RELEASE].[MAIN SUBRELEASE].[MINOR SUBRELEASE]
+VERSION = "0.1.1" #current version to show and use in the project, [MAIN RELEASE].[MAIN SUBRELEASE].[MINOR SUBRELEASE]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -373,7 +373,7 @@ class aboutPage(QtWidgets.QWidget):
         super().__init__()
 
         # window settings
-        self.sizes:tuple[int,int] = (400, 400) #(width, size), in pixels
+        self.sizes:tuple[int,int] = (400, 425) #(width, height), in pixels
         self.setWindowTitle(f"About {PROJECTNAME}")
         self.icon = QtGui.QPixmap(config.icon)
         self.setWindowIcon(self.icon)
