@@ -54,7 +54,10 @@ def executeModule(name:str, **kwargs) -> ModuleResultType:
     return modules[name].execute(VERSION,**kwargs)
 
 if __name__ == "__main__":
-    loadModules()
+    try:
+        loadModules()
+    except Exception as e:
+        print(f"Module load process failed: \n{e.__traceback__}")
     print("Avaiable modules:")
     for module in modules:
         print(f" -{modules[module]}")
