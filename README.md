@@ -1,6 +1,6 @@
 # Opifex
 
-Manual for version `0.1.0`.
+Manual for version `0.1.3`.
 
 [<div style="text-align: center"><img src="source/img/logo.png" width="200"/></div>](source/img/logo.png)
 
@@ -95,6 +95,52 @@ The interface is divided in specialized sections:
 * On the top, a **toolbar** allows you to have quick access to the _configurations file_, to this page and to a quick _info page_.
 
 Output from **executed modules** will be printed to console (at least for now).
+
+## Settings
+
+Settings for Opifex can be changed in the `config.py` file, which can be easily accessed from the `Config` button in GUI mode's toolbar.
+
+Opifex **must be restarted** after any changed setting for the changes to have effect.
+
+The configurations file is structured in these parts:  
+* At the beginning, a few lines of code allow dynamic path detection. Do **not** modify this part. **Remember** to append the variable `p` at the beginning of a path string, if the given path is relative (not absolute).
+* Then, some variables define some general characteristics about the Opifex program.
+* Lastly, many variables used by built-in modules are defined. Modify these variables **only** if you know what you're doing.
+
+The following settings are the ones you might be interested in changing the most.
+
+### Window size
+
+```
+windowSize:tuple[int,int] = (1000,800)
+```
+
+Size of the Opifex window in GUI mode upon startup (in pixels, width and height).
+
+### GUI Themes
+
+```
+style:str = p+"source/qt/light.qss"
+```
+
+Path to the stylesheet used for Opifex in GUI mode. Any stylesheet can be used, as long as it's in the Qt Stylesheet format.
+
+These are the available stylesheets in a standard Opifex installation:
+* `source/qt/light.qss` - light theme (default)
+* `source/qt/dark.qss` - dark theme
+* `source/qt/none.qss` - no custom theme, fallback to the default Qt style
+
+### Localization settings
+
+Currently, Opifex has not been translated to any language other than English **yet**. However, there are still some module settings which should be changed if you desire to use such modules in another language.
+
+```
+piperModel:str = sourceFolder+"voice/en_US-lessac-medium.onnx"
+alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
+alignerModel:str = sourceFolder+"aligner/english_mfa"
+```
+
+These variables contain paths to models and dictionaries for the _TTS_ module (which uses the software _PiperTTS_) and for the _Aligner_ module (which uses _Montral Forced Aligner_). **Only** the English files for these programs are bundled with Opifex, but you can download models for other languages from their respective websites ([Piper](https://huggingface.co/rhasspy/piper-voices/tree/main), [MFA](https://github.com/MontrealCorpusTools/mfa-models)). Refer to their documentations for troubleshooting.
 
 ## Credits and info
 

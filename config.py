@@ -10,6 +10,8 @@ manual:str = p+"README.html"
 icon:str = p+"source/img/logo.png"
 style:str = p+"source/qt/light.qss" #options: "source/qt/light.qss", "source/qt/dark.qss", "source/qt/none.qss"
 tempFolder:str = p+"temp/"
+sourceFolder:str = p+"source/"
+outputFolder:str = p+"generated/"
 
 #DEFAULT MODULES CONFIGS
 
@@ -40,11 +42,9 @@ subtitlesTheme:Theme = Theme(color="&H0000E6FF",
                          contourWidth=10
                          )
 
-outputFolder:str = p+"generated/"
 videoOutputFolder:str = outputFolder+"video/"
 audioOutputPath:str = outputFolder+"voice/{time}/{fileName}.wav"
 
-sourceFolder:str = p+"source/"
 piperLocation:str = sourceFolder+"piper/piper"
 piperModel:str = sourceFolder+"voice/en_US-lessac-medium.onnx"
 alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
