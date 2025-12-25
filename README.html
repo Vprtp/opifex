@@ -63,39 +63,7 @@ By executing a module, you will be running code on your machine like any other p
 </thead>
 <tbody>
 <tr>
-<td><em>RedditVideoGenerator</em></td>
-<td>reddit-video-generator.py</td>
-<td>Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
-<td>url-(str) commentsOrDesc-(bool) accountName-(str)</td>
-<td>paths-(list[str])</td>
-<td>Reddit SimpleVideoGenerator URLunshortener</td>
-</tr>
-<tr>
-<td><em>URLunshortener</em></td>
-<td>unshortenURL.py</td>
-<td>Module that returns the final URL from redirections by a given one (thus 'unshortening' shortened URLs)</td>
-<td>url-(str) rmpars-(bool)</td>
-<td>url-(str)</td>
-<td>/</td>
-</tr>
-<tr>
-<td><em>Reddit</em></td>
-<td>reddit.py</td>
-<td>Module for fetching reddit posts.</td>
-<td>url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int)</td>
-<td>title-(str) description-(str) upvotes-(int) comments-(list[str])</td>
-<td>Screenshot</td>
-</tr>
-<tr>
-<td><em>TTS</em></td>
-<td>tts.py</td>
-<td>Module for generating speech from a given title and text.</td>
-<td>title-(str) text-(str)</td>
-<td>titleDestination-(str) textDestination-(str)</td>
-<td>/</td>
-</tr>
-<tr>
-<td><em>Aligner</em></td>
+<td>Aligner</td>
 <td>alignSRT.py</td>
 <td>Module for generating subtitles from a given audio and its transcript.</td>
 <td>audio-(str) transcript-(str) output-(str)</td>
@@ -103,28 +71,68 @@ By executing a module, you will be running code on your machine like any other p
 <td>/</td>
 </tr>
 <tr>
-<td><em>VideoGenerator</em></td>
+<td>RSS</td>
+<td>rss_handler.py</td>
+<td>Module to fetch info from an RSS feed and its individual articles.</td>
+<td>feedURL-(str) getFullArticle-(bool)</td>
+<td>feedInfo-(dict)</td>
+<td>/</td>
+</tr>
+<tr>
+<td>Reddit</td>
+<td>reddit.py</td>
+<td>Module for fetching reddit posts.</td>
+<td>url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int)</td>
+<td>title-(str) description-(str) upvotes-(int) comments-(list)</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>RedditVideoGenerator</td>
+<td>reddit_video_generator.py</td>
+<td>Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
+<td>url-(str) commentsOrDesc-(bool) accountName-(str)</td>
+<td>paths-(list)</td>
+<td>Reddit SimpleVideoGenerator URLunshortener</td>
+</tr>
+<tr>
+<td>Screenshot</td>
+<td>screenshot.py</td>
+<td>Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Returns the path to the generated image.</td>
+<td>template-(str) data-(dict) size-(tuple)</td>
+<td>destination-(str)</td>
+<td>/</td>
+</tr>
+<tr>
+<td>SimpleVideoGenerator</td>
+<td>simple_video_generator.py</td>
+<td>Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
+<td>content-(dict) accountName-(str)</td>
+<td>paths-(list)</td>
+<td>TTS Aligner VideoGenerator</td>
+</tr>
+<tr>
+<td>TTS</td>
+<td>tts.py</td>
+<td>Module for generating speech from a given title and text.</td>
+<td>title-(str) text-(str)</td>
+<td>titleDestination-(str) textDestination-(str)</td>
+<td>/</td>
+</tr>
+<tr>
+<td>URLunshortener</td>
+<td>unshortenURL.py</td>
+<td>Module that returns the final URL from redirections by a given one (thus 'unshortening' shortened URLs)</td>
+<td>url-(str) rmpars-(bool)</td>
+<td>url-(str)</td>
+<td>/</td>
+</tr>
+<tr>
+<td>VideoGenerator</td>
 <td>video.py</td>
 <td>Module for generating a video based on given title, subtitles, audio for both title and text, and a destination path.</td>
 <td>title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str)</td>
 <td>/</td>
 <td>/</td>
-</tr>
-<tr>
-<td><em>Screenshot</em></td>
-<td>screenshot.py</td>
-<td>Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Returns the path to the generated image.</td>
-<td>template-(str) data-(dict) size-(tuple[int,int])</td>
-<td>destination-(str)</td>
-<td>/</td>
-</tr>
-<tr>
-<td><em>SimpleVideoGenerator</em></td>
-<td>simple-video-generator.py</td>
-<td>Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated)</td>
-<td>content-(dict[str,str]) accountName-(str)</td>
-<td>paths-(list[str])</td>
-<td>TTS Aligner VideoGenerator</td>
 </tr>
 </tbody>
 </table>

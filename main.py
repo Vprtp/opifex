@@ -8,7 +8,7 @@ from typing import get_origin, get_args
 import subprocess
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.1" #current version to show and use in the project, [MAIN RELEASE].[MAIN SUBRELEASE].[MINOR SUBRELEASE]
+VERSION = "0.1.3" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -454,7 +454,7 @@ class singleUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         # run init functions
-        self.setupConsoleRedirect()
+        self.setupConsoleRedirect() #REMEMBER TO DISABLE THIS WHEN DEBUGGING AND A CRASH HAPPENS ON STARTUP
         self.selectedModule: str = ""
         self.moduleParams:list[QtWidgets.QWidget] = []
         self.updateModuleList()

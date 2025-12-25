@@ -48,7 +48,11 @@ def loadModules(dir:str = modulesDir, checkForDependencies:bool = True) -> None:
     if checkForDependencies:
         for d in dependencies:
             if d[0] not in modules:
-                raise ModuleNotFoundError(f"Module '{d[0]}', required by '{d[1]}', was not found in the modules folder.")          
+                raise ModuleNotFoundError(f"Module '{d[0]}', required by '{d[1]}', was not found in the modules folder.")    
+
+    temp = dict(sorted(modules.items()))
+    modules.clear()
+    modules.update(temp)
 
 def executeModule(name:str, **kwargs) -> ModuleResultType:
     return modules[name].execute(VERSION,**kwargs)
