@@ -72,32 +72,7 @@ def get(url:str, fullArticle:bool) -> dict:
 class RSS(BaseModule):
     def __init__(self):
         self.name = "RSS"
-        self.description = """
-        Module to fetch info from an RSS feed and its individual articles.
-        
-        Parameters:
-        -feedURL: URL to the RSS feed
-        -getFullArticle: Whether or not to download the full article by following the link given in each RSS entry
-
-        Returns dict in this format, containing each entry in the "entries" key:
-        {
-            feedtitle : <Title of the requested RSS feed, string>
-            feeddesc : <Description of the requested RSS feed, string>
-            feedlink : <Link to the requested RSS feed, string>
-            entries : [
-                        {
-                            title : <Title to this entry; str>
-                            author : <Name of the author of the entry; str>
-                            link : <Link to this entry; str>
-                            time : <Time when this article was published, in Unix timestamp; int>
-                            content : <Entry content, which will be the summary, if fullArticle=false, or the fetched article, if fullArticle=true; str>
-                        },
-                        {<second entry>}, 
-                        {<third entry>}, 
-                        {<etc>}
-                    ]
-        }
-        """
+        self.description = "Module to fetch info from an RSS feed and its individual articles.\n\nParameters:\n-feedURL: URL to the RSS feed\n-getFullArticle: Whether or not to download the full article by following the link given in each RSS entry\n\nReturns dict in this format, containing each entry in the 'entries' key:\n{\n\tfeedtitle : <Title of the requested RSS feed, string>\n\tfeeddesc : <Description of the requested RSS feed, string>\n\tfeedlink : <Link to the requested RSS feed, string>\n\tentries : [\n\t\t\t{\n\t\t\t\ttitle : <Title to this entry; str>\n\t\t\t\tauthor : <Name of the author of the entry; str>\n\t\t\t\tlink : <Link to this entry; str>\n\t\t\t\ttime : <Time when this article was published, in Unix timestamp; int>\n\t\t\t\tcontent : <Entry content, which will be the summary, if fullArticle=false, or the fetched article, if fullArticle=true; str>\n\t\t\t\t},\n\t\t\t{<second entry>}, \n\t\t\t{<third entry>}, \n\t\t\t{<etc>}\n\t\t]\n}"
         self.requiredArgs = [("feedURL",str),("getFullArticle",bool)]
         self.returnedDataTypes = [("feedInfo",dict)]
         self.dependencies = []

@@ -18,7 +18,7 @@ class BaseModule:
         self.dependencies:List[str] = ABC #list of "dependencies" (other plugins' name) required for the plugin to work
 
     def __str__(self):
-        return f"Module <{self.name}>: {self.description.split("\n")[0]}" #prints first line of description, which should always be just the summary. hopefully.
+        return f"Module <{self.name}>: {self.description.split('\n')[0]}" #prints first line of description, which should always be just the summary. hopefully.
     
     @abstractmethod
     def execute(self, version:str, **kwargs) -> ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
