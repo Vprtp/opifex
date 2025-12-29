@@ -13,7 +13,7 @@ def generate(titlesAndTexts:dict[str,str], accountName:str, verboseName:bool=Tru
     initTime = time.time()
     paths:list[str] = []
     for title, desc in titlesAndTexts.items():
-        loc:tuple[str,str] = tts.generate(title,desc)
+        loc:tuple[str,str] = (tts.generate(title),tts.generate(desc))
         print(f"Saved files in {loc[0]} and {loc[1]}")
         parentDir:str = str(pathlib.Path(loc[1]).parents[0])
         sub:str = alignSRT.generateSubtitles(loc[1],tts.cleanText(desc),parentDir)[1]

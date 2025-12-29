@@ -116,40 +116,23 @@ def cleanText(original:str, allowed:list[str]=allowedChars_EN, htmlCodes:dict[st
     filtered = ''.join([char for char in filtered if char in allowed])
     return filtered
 
-def generate(title: str, text: str, titleVoice: str = model, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lenghtScale:float = 1.2) -> tuple[str, str]:
+def generate(text: str, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lenghtScale:float = 1.2) -> tuple[str, str]:
     timestamp: int = int(time.time())
     
     # Create the output directory
     output_dir = destination.format(time=timestamp, fileName="").rsplit('/', 1)[0]
     os.makedirs(output_dir, exist_ok=True)
     
-    titleDestination: str = destination.format(time=timestamp, fileName="title")
-    textDestination: str = destination.format(time=timestamp, fileName="text")
+    textDestination: str = destination.format(time=timestamp, fileName=f"speech{int(time.time()*1000)%1000}")
     
-    print(f"piper: '{piper}' title: '{title}' titleVoice: '{titleVoice}' clean: '{clean}' textVoice: '{textVoice}' destination: '{destination}' cleanIterations: {cleanIterations} speed: {speed} noiseScale: {noiseScale} lenghtScale: {lenghtScale}")
+    print(f"piper: '{piper}' clean: '{clean}' textVoice: '{textVoice}' destination: '{destination}' cleanIterations: {cleanIterations} speed: {speed} noiseScale: {noiseScale} lenghtScale: {lenghtScale}")
 
     if clean:
-        title = cleanText(title)
         text = cleanText(text)
         for i in range(cleanIterations): #generate and delete the file multiple times and then take the last one in consideration
-            if os.path.exists(titleDestination):
-                os.remove(titleDestination)
             if os.path.exists(textDestination):
                 os.remove(textDestination)
-            # Generate title first
-            subprocess.run(
-                [
-                    piper,
-                    "--model", titleVoice,
-                    "--output_file", titleDestination,
-                    "--speed", str(speed),
-                    "--noise_scale", str(noiseScale),
-                    "--lenght_scale", str(lenghtScale),
-                ],
-                input=title.encode(),
-                check=True,
-            )
-            # Then generate the text
+            
             subprocess.run(
                 [
                     piper,
@@ -163,21 +146,6 @@ def generate(title: str, text: str, titleVoice: str = model, clean:bool = True, 
                 check=True, 
             )
     else:
-        # Generate title first
-        subprocess.run(
-            [
-                piper,
-                "--model", titleVoice,
-                "--output_file", titleDestination,
-                "--speed", str(speed),
-                "--noise_scale", str(noiseScale),
-                "--lenght_scale", str(lenghtScale),
-            ],
-            input=title.encode(),
-            check=True,
-        )
-        
-        # Then generate the text
         subprocess.run(
             [
                 piper,
@@ -191,19 +159,19 @@ def generate(title: str, text: str, titleVoice: str = model, clean:bool = True, 
             check=True, 
         )
     
-    return (titleDestination, textDestination)
+    return (textDestination)
 
 class TTS(BaseModule):
     def __init__(self):
         self.name = "TTS"
-        self.description = "Module for generating speech from a given title and text.\n\nParameters:\n-title: Title to run through the model\n-text: Description text to run through the model"
-        self.requiredArgs = [("title",str),("text",str)]
-        self.returnedDataTypes = [("titleDestination",str),("textDestination",str)]
+        self.description = "Module for generating speech from a given text.\n\nParameters:\n-text: Text to run through the model, which will become speech"
+        self.requiredArgs = [("text",str)]
+        self.returnedDataTypes = [("destination",str)]
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            paths = generate(kwargs["title"],kwargs["text"])
+            paths = generate(kwargs["text"])
             return ModuleResultType(None,{"titleDestination":paths[0],"textDestination":paths[1]})
         except Exception as e:
             return ModuleResultType(e,{})

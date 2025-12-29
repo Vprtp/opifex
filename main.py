@@ -8,7 +8,7 @@ from typing import get_origin, get_args
 import subprocess
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.3" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
+VERSION = "0.1.4" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -400,7 +400,6 @@ class aboutPage(QtWidgets.QWidget):
         self.setLayout(self.layout)
         self.layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-
 class singleUI(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -420,10 +419,13 @@ class singleUI(QtWidgets.QWidget):
         self.consoleLbl.setStyleSheet("font-weight: bold")
         self.consoleTxt = QtWidgets.QPlainTextEdit()
         self.consoleTxt.setReadOnly(True)
+        self.clearConsoleBtn = QtWidgets.QPushButton("Clear")
+        self.clearConsoleBtn.setMaximumWidth(100)
 
         # connect actions
         self.moduleList.itemActivated.connect(self.updateSelectedModule)
         self.updateModulesBtn.clicked.connect(self.updateModuleList)
+        self.clearConsoleBtn.clicked.connect(self.clearConsole)
 
         # add widgets to left panel
         self.left = QtWidgets.QWidget()
@@ -439,7 +441,12 @@ class singleUI(QtWidgets.QWidget):
         #add widgets to bottom panel
         self.bottom = QtWidgets.QWidget()
         self.bottomLayout = QtWidgets.QVBoxLayout(self.bottom)
-        self.bottomLayout.addWidget(self.consoleLbl)
+        consoleTitle = QtWidgets.QWidget()
+        consoleTitleLayout = QtWidgets.QHBoxLayout(consoleTitle)
+        consoleTitleLayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
+        consoleTitleLayout.addWidget(self.consoleLbl)
+        consoleTitleLayout.addWidget(self.clearConsoleBtn)
+        self.bottomLayout.addWidget(consoleTitle)
         self.bottomLayout.addWidget(self.consoleTxt)
 
         # finalize splitter
@@ -496,6 +503,10 @@ class singleUI(QtWidgets.QWidget):
 
         # Start background thread
         self.worker.start()
+    
+    @QtCore.Slot()
+    def clearConsole(self):
+        self.consoleTxt.setPlainText("")
 
     def taskFinished(self, result):
         print("\nReturned:\n", result)
@@ -545,7 +556,7 @@ class singleUI(QtWidgets.QWidget):
             rightLayout.addWidget(descLbl)
             
             i:int = 0
-            for v in module.requiredArgs: #TO FIX
+            for v in module.requiredArgs:
                 self.moduleParams.append(TypeInputFactory.create_input_widget(v[1]))
                 rightLayout.addWidget(QtWidgets.QLabel(f"{v[0]} - {v[1].__name__}"))
                 rightLayout.addWidget(self.moduleParams[i])

@@ -47,7 +47,7 @@ def get(url:str, fullArticle:bool) -> dict:
     tempentry:dict = {}
     article:str = ""
     for entry in feed.entries:
-        tempentry.clear()
+        tempentry = {}
 
         tempentry["title"] = entry.title
         tempentry["author"] = entry.author
@@ -60,7 +60,7 @@ def get(url:str, fullArticle:bool) -> dict:
             tempentry["content"] = extract(entry.summary)
         
         entries.append(tempentry)
-    
+
     val:dict = {
         "feedtitle" : feed.feed.title,
         "feeddesc" : feed.feed.description,
