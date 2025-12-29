@@ -29,17 +29,42 @@ th { background: #f6f8fa; font-weight: 600; }
 </head>
 <body class="markdown-body">
     <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>Manual for version <code>0.1.3</code>.</p>
+<p>Manual for version <code>0.1.4</code>.</p>
 <p><a href="source/img/logo.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/logo.png"><img src="source/img/logo.png" width="200" style="max-width: 100%;"></a></div><p></p>
-<p><em>Opifex</em> is a modular tool designed for automated content creation (videos, images, texts, audios, and more, depending on which modules are installed and used).</p>
+<p><em>Opifex</em> is a modular tool designed for automated content creation (videos, images, text, audio, and more, depending on which modules are installed and used).</p>
+<div class="markdown-heading"><h2 class="heading-element">Quickstart</h2><a id="user-content-quickstart" class="anchor" aria-label="Permalink: Quickstart" href="#quickstart"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p>Clone the repository.</p>
+<pre><code>git clone https://github.com/Vprtp/opifex.git
+cd opifex
+</code></pre>
+<p>Run the installation script.</p>
+<pre><code>bash install.sh
+</code></pre>
+<p>Start Opifex.</p>
+<pre><code>bash main.sh
+</code></pre>
+<div class="markdown-heading"><h3 class="heading-element">Example use case: generating a short-form storytelling video from a Reddit post</h3><a id="user-content-example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post" class="anchor" aria-label="Permalink: Example use case: generating a short-form storytelling video from a Reddit post" href="#example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<ol>
+<li>Find a Reddit post with a long enough description that will act as the story (for example, posts in the <em>r/stories</em> subreddit work particularly well).</li>
+<li>Open Opifex in GUI mode with <code>bash main.sh</code> (See the <code>GUI mode</code> section below for instructions on how to use it).</li>
+<li>Select the <code>RedditVideoGenerator</code> module.</li>
+<li>Insert the post's URL inside the <code>url</code> parameter's text box.</li>
+<li>Insert the name to which this video will be credited as the <code>accountName</code> parameter.</li>
+<li>Click on the <code>Execute</code> button, then wait for completion (depending on how long the story is, this might take a few minutes).</li>
+</ol>
+<p>In the end, something like this will be printed in the console:</p>
+<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'paths': ['/path/to/file.mp4']}&gt;
+</code></pre>
+<p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
 <div class="markdown-heading"><h2 class="heading-element">Installation</h2><a id="user-content-installation" class="anchor" aria-label="Permalink: Installation" href="#installation"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>After downloading the repository, Opifex can be properly set up by running <code>bash install.sh</code> in the main directory.</p>
+<p>After downloading (or cloning) the repository, Opifex can be properly set up by running <code>bash install.sh</code> in the main directory.</p>
 <p>The script will download various assets that are used by the program (or by the default modules) that are too heavy to be hosted on GitHub and it will set up a <em>Conda</em> environment for the program (based on <code>environment.yml</code>), as well as install Conda (precisely <em>Miniconda3</em>) if no Conda version was found on the system.<br>
 Opifex requires this environment to function properly, as some Conda-exclusive programs (such as <em>Montreal Forced Aligner</em>) are being used.</p>
 <p>Opifex can then be started by running <code>bash main.sh</code> in the main directory.</p>
-<p>(In both cases, please <strong>avoid</strong> running the scripts in other methods, for example <code>./main.sh</code>, since this way of execution might cause problems.)</p>
+<p>(In both cases, please <strong>avoid</strong> running the scripts using other methods, for example <code>./main.sh</code>, since this way of execution might cause problems.)</p>
 <p>So, as of now, <strong>Opifex runs exclusively on Linux</strong>.<br>
 Also, the installer script currently only supports Debian-based distributions (or any distribution running <em>APT</em>): Opifex is still supported for other distributions, but it requires manual installation.</p>
+<p>Opifex was designed, tested, and intended for use with <strong>Python &gt;= 3.12.0</strong>.</p>
 <div class="markdown-heading"><h2 class="heading-element">Modules</h2><a id="user-content-modules" class="anchor" aria-label="Permalink: Modules" href="#modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <div class="markdown-heading"><h3 class="heading-element">What are modules?</h3><a id="user-content-what-are-modules" class="anchor" aria-label="Permalink: What are modules?" href="#what-are-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p><strong>Modules</strong> are independent pieces of code, each with a specific function, that can be executed through Opifex.<br>
@@ -71,8 +96,16 @@ By executing a module, you will be running code on your machine like any other p
 <td>/</td>
 </tr>
 <tr>
+<td>ImageFinder</td>
+<td>image_finder.py</td>
+<td>Module that finds and downloads online images onto a given directory.</td>
+<td>search-(str) destDir-(str)</td>
+<td>/</td>
+<td>/</td>
+</tr>
+<tr>
 <td>RSS</td>
-<td>rss_handler.py</td>
+<td>rss.py</td>
 <td>Module to fetch info from an RSS feed and its individual articles.</td>
 <td>feedURL-(str) getFullArticle-(bool)</td>
 <td>feedInfo-(dict)</td>
@@ -113,9 +146,9 @@ By executing a module, you will be running code on your machine like any other p
 <tr>
 <td>TTS</td>
 <td>tts.py</td>
-<td>Module for generating speech from a given title and text.</td>
-<td>title-(str) text-(str)</td>
-<td>titleDestination-(str) textDestination-(str)</td>
+<td>Module for generating speech from a given text.</td>
+<td>text-(str)</td>
+<td>destination-(str)</td>
 <td>/</td>
 </tr>
 <tr>
@@ -148,7 +181,7 @@ Be careful to put all your code in functions: anything outside them will be run 
         self.dependencies:List[str] = ABC #list of "dependencies" (other plugins' name) required for the plugin to work
 
     def __str__(self):
-        return f"Module &lt;{self.name}&gt;: {self.description.split("\n")[0]}" #prints first line of description, which should always be just the summary. hopefully.
+        return f"Module &lt;{self.name}&gt;: {self.description.split('\n')[0]}" #prints first line of description, which should always be just the summary. hopefully.
     
     @abstractmethod
     def execute(self, version:str, **kwargs) -&gt; ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
@@ -167,17 +200,17 @@ Be careful to put all your code in functions: anything outside them will be run 
 <div class="markdown-heading"><h2 class="heading-element">GUI mode</h2><a id="user-content-gui-mode" class="anchor" aria-label="Permalink: GUI mode" href="#gui-mode"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Opifex can run in an intuitive <strong>GUI mode</strong>:</p>
 <p><a href="source/img/opifex-gui.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/opifex-gui.png"><img src="source/img/opifex-gui.png" width="600" style="max-width: 100%;"></a></div><p></p>
-<p>The interface is divided in specialized sections:</p>
+<p>The interface is divided into specialized sections:</p>
 <ul>
 <li>On the left, there's a list of all loaded <strong>modules</strong>. Each module can be inspected by <em>double clicking</em>. Modules can be reloaded by pressing the <code>Reload</code> button.</li>
 <li>On the right, details of the <strong>selected module</strong> are displayed. You can <em>execute</em> the selected module by pressing the <code>Execute</code> button, after having provided all of the selected module's parameters.</li>
-<li>On the bottom, a <strong>console</strong> shows all output from modules and Opifex itself (after startup, all <code>stdout</code> and <code>stderr</code> calls get redirected here).</li>
+<li>On the bottom, a <strong>console</strong> shows all output from modules and Opifex itself (after startup, all <code>stdout</code> and <code>stderr</code> calls get redirected here). The console can be cleared by pressing the <code>Clear</code> button.</li>
 <li>On the top, a <strong>toolbar</strong> allows you to have quick access to the <em>configurations file</em>, to this page and to a quick <em>info page</em>.</li>
 </ul>
 <p>Output from <strong>executed modules</strong> will be printed to console (at least for now).</p>
 <div class="markdown-heading"><h2 class="heading-element">Settings</h2><a id="user-content-settings" class="anchor" aria-label="Permalink: Settings" href="#settings"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Settings for Opifex can be changed in the <code>config.py</code> file, which can be easily accessed from the <code>Config</code> button in GUI mode's toolbar.</p>
-<p>Opifex <strong>must be restarted</strong> after any changed setting for the changes to have effect.</p>
+<p>Opifex <strong>must be restarted</strong> after any setting change for the changes to take effect.</p>
 <p>The configurations file is structured in these parts:</p>
 <ul>
 <li>At the beginning, a few lines of code allow dynamic path detection. Do <strong>not</strong> modify this part. <strong>Remember</strong> to append the variable <code>p</code> at the beginning of a path string, if the given path is relative (not absolute).</li>
@@ -208,14 +241,14 @@ Be careful to put all your code in functions: anything outside them will be run 
 alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
 alignerModel:str = sourceFolder+"aligner/english_mfa"
 </code></pre>
-<p>These variables contain paths to models and dictionaries for the <em>TTS</em> module (which uses the software <em>PiperTTS</em>) and for the <em>Aligner</em> module (which uses <em>Montral Forced Aligner</em>). <strong>Only</strong> the English files for these programs are bundled with Opifex, but you can download models for other languages from their respective websites (<a href="https://huggingface.co/rhasspy/piper-voices/tree/main" rel="nofollow">Piper</a>, <a href="https://github.com/MontrealCorpusTools/mfa-models">MFA</a>). Refer to their documentations for troubleshooting.</p>
+<p>These variables contain paths to models and dictionaries for the <em>TTS</em> module (which uses the software <em>PiperTTS</em>) and for the <em>Aligner</em> module (which uses <em>Montreal Forced Aligner</em>). Only the English files for these programs are bundled with Opifex, but you can download models for other languages from their respective websites (<a href="https://huggingface.co/rhasspy/piper-voices/tree/main" rel="nofollow">Piper</a>, <a href="https://github.com/MontrealCorpusTools/mfa-models">MFA</a>). Refer to their documentation for troubleshooting.</p>
 <div class="markdown-heading"><h2 class="heading-element">Credits and info</h2><a id="user-content-credits-and-info" class="anchor" aria-label="Permalink: Credits and info" href="#credits-and-info"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>All code for Opifex has been written by <strong>prtp</strong> (<a href="https://github.com/Vprtp">Vprtp</a> on GitHub).<br>
 Opifex is distributed under the <a href="LICENSE">GNU GPL v3</a> license.<br>
 To function properly, Opifex uses the following libraries/software (which are included with the installation of this program):</p>
 <ul>
 <li>
-<em>PyQt6</em> for its graphic functionalities</li>
+<em>PyQt6</em> for its graphical functionalities</li>
 <li>
 <em>PiperTTS</em> for text-to-speech</li>
 <li>
@@ -225,7 +258,7 @@ To function properly, Opifex uses the following libraries/software (which are in
 <li>
 <em>Selenium</em> to capture web pages</li>
 </ul>
-<p>Opifex (from the Latin for "artisan" or "manufacturer") is a hobby project, so please be aware it may not yet be production-grade software. However, I still plan to add a lot of other things to it in future: first of all, a slighly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.</p>
+<p>Opifex (from the Latin for "artisan" or "manufacturer") is a hobby project, so please be aware it may not yet be production-grade software. However, I still plan to add a lot of other things to it in future: first of all, a slightly more user-friendly GUI, then a CLI mode, tons of other modules, and all of this just for the "single" mode (which runs entirely on the main machine). So, most importantly, I plan to add a "master" mode that offloads processing to multiple machines running in "worker" mode, effectively turning Opifex into a sort of "content farm" software.</p>
 <p>Thanks for your attention.</p>
 
 </body>

@@ -52,3 +52,5 @@ alignerModel:str = sourceFolder+"aligner/english_mfa"
 videoPool:list[str] = [sourceFolder+"video/background-gta01.mp4", sourceFolder+"video/background-gta02.mp4", sourceFolder+"video/background-mc01.mp4", sourceFolder+"video/background-mc02.mp4", sourceFolder+"video/background-msc01.mp4", sourceFolder+"video/background-msc02.mp4"]
 dingSound:str = sourceFolder+"audio/ding.wav"
 titleHtmlTemplate:str = sourceFolder+"img/reddit.html"
+
+imageSearchProvider:str = "https://www.ecosia.org/images?q={terms}"
