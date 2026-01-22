@@ -66,7 +66,7 @@ class Reddit(BaseModule):
         self.description = "Module for fetching reddit posts.\n\nParameters:\n-url: (Verbose, not shortened) URL to the desired Reddit post\n-upvotesMin: Fraction of comment upvotes required to pass the filter, compared to the original post's upvotes. For example, if upvotesMin = 0.5 and the original post has 100 upvotes, comments must have at least 50 upvotes to be considered.\n-wordsMin: Minimum words in the comment to be considered.\n-checkMax: Highest index of comment to check. The higher, the slower the process, but more comments will be considered\n\nReturns:\n-title: Title of the post\n-description: Description of the post\n-upvotes: Upvotes of the post\n-comments: List of the filtered comments from the comment section, given earlier parameters"
         self.requiredArgs = [("url",str),("upvotesMin",float),("wordsMin",int),("checkMax",int)]
         self.returnedDataTypes = [("title",str),("description",str),("upvotes",int),("comments",list[str])]
-        self.dependencies = ["Screenshot"]
+        self.dependencies = ["ScreenshotPage"]
     
     def execute(self, version:str, **kwargs):
         try:

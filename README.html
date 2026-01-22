@@ -29,20 +29,17 @@ th { background: #f6f8fa; font-weight: 600; }
 </head>
 <body class="markdown-body">
     <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>Manual for version <code>0.1.4</code>.</p>
+<p>Manual for version <code>0.1.5</code>.</p>
 <p><a href="source/img/logo.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/logo.png"><img src="source/img/logo.png" width="200" style="max-width: 100%;"></a></div><p></p>
 <p><em>Opifex</em> is a modular tool designed for automated content creation (videos, images, text, audio, and more, depending on which modules are installed and used).</p>
 <div class="markdown-heading"><h2 class="heading-element">Quickstart</h2><a id="user-content-quickstart" class="anchor" aria-label="Permalink: Quickstart" href="#quickstart"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Clone the repository.</p>
-<pre><code>git clone https://github.com/Vprtp/opifex.git
-cd opifex
-</code></pre>
+<div class="highlight highlight-source-shell"><pre>git clone https://github.com/Vprtp/opifex.git
+<span class="pl-c1">cd</span> opifex</pre></div>
 <p>Run the installation script.</p>
-<pre><code>bash install.sh
-</code></pre>
+<div class="highlight highlight-source-shell"><pre>bash install.sh</pre></div>
 <p>Start Opifex.</p>
-<pre><code>bash main.sh
-</code></pre>
+<div class="highlight highlight-source-shell"><pre>bash main.sh</pre></div>
 <div class="markdown-heading"><h3 class="heading-element">Example use case: generating a short-form storytelling video from a Reddit post</h3><a id="user-content-example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post" class="anchor" aria-label="Permalink: Example use case: generating a short-form storytelling video from a Reddit post" href="#example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <ol>
 <li>Find a Reddit post with a long enough description that will act as the story (for example, posts in the <em>r/stories</em> subreddit work particularly well).</li>
@@ -56,7 +53,7 @@ cd opifex
 <pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'paths': ['/path/to/file.mp4']}&gt;
 </code></pre>
 <p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
-<div class="markdown-heading"><h2 class="heading-element">Installation</h2><a id="user-content-installation" class="anchor" aria-label="Permalink: Installation" href="#installation"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h2 class="heading-element">Installation (in detail)</h2><a id="user-content-installation-in-detail" class="anchor" aria-label="Permalink: Installation (in detail)" href="#installation-in-detail"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>After downloading (or cloning) the repository, Opifex can be properly set up by running <code>bash install.sh</code> in the main directory.</p>
 <p>The script will download various assets that are used by the program (or by the default modules) that are too heavy to be hosted on GitHub and it will set up a <em>Conda</em> environment for the program (based on <code>environment.yml</code>), as well as install Conda (precisely <em>Miniconda3</em>) if no Conda version was found on the system.<br>
 Opifex requires this environment to function properly, as some Conda-exclusive programs (such as <em>Montreal Forced Aligner</em>) are being used.</p>
@@ -112,12 +109,20 @@ By executing a module, you will be running code on your machine like any other p
 <td>/</td>
 </tr>
 <tr>
+<td>RecordPage</td>
+<td>record.py</td>
+<td>Module that records a video of an HTML template with given parameter values. Note that the template's animations in the video might look off, depending on the host machine's performance.</td>
+<td>template-(str) data-(dict) size-(tuple) duration-(float) fps-(int)</td>
+<td>destination-(str)</td>
+<td>ScreenshotPage</td>
+</tr>
+<tr>
 <td>Reddit</td>
 <td>reddit.py</td>
 <td>Module for fetching reddit posts.</td>
 <td>url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int)</td>
 <td>title-(str) description-(str) upvotes-(int) comments-(list)</td>
-<td>Screenshot</td>
+<td>ScreenshotPage</td>
 </tr>
 <tr>
 <td>RedditVideoGenerator</td>
@@ -128,9 +133,9 @@ By executing a module, you will be running code on your machine like any other p
 <td>Reddit SimpleVideoGenerator URLunshortener</td>
 </tr>
 <tr>
-<td>Screenshot</td>
+<td>ScreenshotPage</td>
 <td>screenshot.py</td>
-<td>Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Returns the path to the generated image.</td>
+<td>Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image.</td>
 <td>template-(str) data-(dict) size-(tuple)</td>
 <td>destination-(str)</td>
 <td>/</td>
@@ -162,7 +167,7 @@ By executing a module, you will be running code on your machine like any other p
 <tr>
 <td>VideoGenerator</td>
 <td>video.py</td>
-<td>Module for generating a video based on given title, subtitles, audio for both title and text, and a destination path.</td>
+<td>Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path.</td>
 <td>title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str)</td>
 <td>/</td>
 <td>/</td>
@@ -171,32 +176,60 @@ By executing a module, you will be running code on your machine like any other p
 </table>
 <div class="markdown-heading"><h3 class="heading-element">Creating modules</h3><a id="user-content-creating-modules" class="anchor" aria-label="Permalink: Creating modules" href="#creating-modules"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized <code>basemodule.BaseModule</code> class at the end of it, so that it can be recognized by Opifex.<br>
-Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.</p>
-<pre><code>class BaseModule:
-    def __init__(self):
-        self.name = ABC
-        self.description = ABC
-        self.requiredArgs:List[Tuple[str,type]] = ABC #list of required parameters as (name, type) pairs
-        self.returnedDataTypes:List[Tuple[str,type]] = ABC #list of returned key values and respective data types in returned data dict of ModuleResultType
-        self.dependencies:List[str] = ABC #list of "dependencies" (other plugins' name) required for the plugin to work
+Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.<br>
+This is the structure of the <code>BaseModule</code> class:</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-v">BaseModule</span>:
+    <span class="pl-k">def</span> <span class="pl-en">__init__</span>(<span class="pl-s1">self</span>):
+        <span class="pl-s1">self</span>.<span class="pl-c1">name</span> <span class="pl-c1">=</span> <span class="pl-c1">ABC</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">description</span> <span class="pl-c1">=</span> <span class="pl-c1">ABC</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">requiredArgs</span>:<span class="pl-v">List</span>[<span class="pl-v">Tuple</span>[<span class="pl-smi">str</span>,<span class="pl-smi">type</span>]] <span class="pl-c1">=</span> <span class="pl-c1">ABC</span> <span class="pl-c">#list of required parameters as (name, type) pairs</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">returnedDataTypes</span>:<span class="pl-v">List</span>[<span class="pl-v">Tuple</span>[<span class="pl-smi">str</span>,<span class="pl-smi">type</span>]] <span class="pl-c1">=</span> <span class="pl-c1">ABC</span> <span class="pl-c">#list of returned key values and respective data types in returned data dict of ModuleResultType</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">dependencies</span>:<span class="pl-v">List</span>[<span class="pl-smi">str</span>] <span class="pl-c1">=</span> <span class="pl-c1">ABC</span> <span class="pl-c">#list of "dependencies" (other plugins' name) required for the plugin to work</span>
 
-    def __str__(self):
-        return f"Module &lt;{self.name}&gt;: {self.description.split('\n')[0]}" #prints first line of description, which should always be just the summary. hopefully.
+    <span class="pl-k">def</span> <span class="pl-en">__str__</span>(<span class="pl-s1">self</span>):
+        <span class="pl-k">return</span> <span class="pl-s">f"Module &lt;<span class="pl-s1"><span class="pl-kos">{</span><span class="pl-s1">self</span>.<span class="pl-c1">name</span><span class="pl-kos">}</span></span>&gt;: <span class="pl-s1"><span class="pl-kos">{</span><span class="pl-s1">self</span>.<span class="pl-c1">description</span>.<span class="pl-c1">split</span>(<span class="pl-s">'<span class="pl-cce">\n</span>'</span>)[<span class="pl-c1">0</span>]<span class="pl-kos">}</span></span>"</span> <span class="pl-c">#prints first line of description, which should always be just the summary. hopefully.</span>
     
-    @abstractmethod
-    def execute(self, version:str, **kwargs) -&gt; ModuleResultType: #version is the program version, it should be passed automatically by modules.executeModule()
-        """Execute the module and return results"""
-        pass
-</code></pre>
-<p><code>YourModule.execute()</code> must return a variable of type <code>basemodule.ModuleResultType</code>, which will contain information about possible execution errors and data returned by the module:</p>
-<pre><code>class ModuleResultType:
-    def __init__(self, exception:Exception|None, data:Dict[str, Any]):
-        self.exception = exception
-        self.data = data
+    <span class="pl-en">@<span class="pl-s1">abstractmethod</span></span>
+    <span class="pl-k">def</span> <span class="pl-en">execute</span>(<span class="pl-s1">self</span>, <span class="pl-s1">version</span>:<span class="pl-smi">str</span>, <span class="pl-c1">**</span><span class="pl-s1">kwargs</span>) <span class="pl-c1">-&gt;</span> <span class="pl-smi">ModuleResultType</span>: <span class="pl-c">#version is the program version, it should be passed automatically by modules.executeModule()</span>
+        <span class="pl-s">"""Execute the module and return results"""</span>
+        <span class="pl-k">pass</span></pre></div>
+<p><code>YourModule.execute()</code> must return a variable of type <code>basemodule.ModuleResultType</code>, which will contain information about possible execution errors and data returned by the module.<br>
+This is the structure of the <code>ModuleResultType</code> class:</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-v">ModuleResultType</span>:
+    <span class="pl-k">def</span> <span class="pl-en">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">exception</span>:<span class="pl-v">Exception</span><span class="pl-c1">|</span><span class="pl-c1">None</span>, <span class="pl-s1">data</span>:<span class="pl-v">Dict</span>[<span class="pl-smi">str</span>, <span class="pl-smi">Any</span>]):
+        <span class="pl-s1">self</span>.<span class="pl-c1">exception</span> <span class="pl-c1">=</span> <span class="pl-s1">exception</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">data</span> <span class="pl-c1">=</span> <span class="pl-s1">data</span>
     
-    def __str__(self):
-        return f"ModuleResultType: exception &lt;{str(self.exception)}&gt; data &lt;{str(self.data)}&gt;"
-</code></pre>
+    <span class="pl-k">def</span> <span class="pl-en">__str__</span>(<span class="pl-s1">self</span>):
+        <span class="pl-k">return</span> <span class="pl-s">f"ModuleResultType: exception &lt;<span class="pl-s1"><span class="pl-kos">{</span><span class="pl-en">str</span>(<span class="pl-s1">self</span>.<span class="pl-c1">exception</span>)<span class="pl-kos">}</span></span>&gt; data &lt;<span class="pl-s1"><span class="pl-kos">{</span><span class="pl-en">str</span>(<span class="pl-s1">self</span>.<span class="pl-c1">data</span>)<span class="pl-kos">}</span></span>&gt;"</span></pre></div>
+<p>So, in your module, you should include something like this:</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">from</span> <span class="pl-s1">basemodule</span> <span class="pl-k">import</span> <span class="pl-v">BaseModule</span>, <span class="pl-v">ModuleResultType</span>
+
+<span class="pl-k">class</span> <span class="pl-v">YourModule</span>(<span class="pl-v">BaseModule</span>):
+    <span class="pl-k">def</span> <span class="pl-en">__init__</span>(<span class="pl-s1">self</span>):
+        <span class="pl-s1">self</span>.<span class="pl-c1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"YourModelsName"</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">description</span> <span class="pl-c1">=</span> <span class="pl-s">"Description of your module (the more detailed it is, the better)"</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">requiredArgs</span> <span class="pl-c1">=</span> [(<span class="pl-s">"put_required_parameters_here"</span>,<span class="pl-s1">str</span>),(<span class="pl-s">"likethis"</span>,<span class="pl-s1">int</span>),(<span class="pl-s">"orthis"</span>,<span class="pl-s1">dict</span>[<span class="pl-s1">str</span>,<span class="pl-s1">str</span>])]
+        <span class="pl-s1">self</span>.<span class="pl-c1">returnedDataTypes</span> <span class="pl-c1">=</span> [(<span class="pl-s">"put_expected_returned_values_here"</span>,<span class="pl-s1">str</span>),(<span class="pl-s">"example"</span>,<span class="pl-s1">bool</span>)]
+        <span class="pl-s1">self</span>.<span class="pl-c1">dependencies</span> <span class="pl-c1">=</span> [<span class="pl-s">"WriteHere"</span>,<span class="pl-s">"NamesOfModules"</span>,<span class="pl-s">"ThatThisOne"</span>,<span class="pl-s">"DependsOn"</span>]
+    
+    <span class="pl-k">def</span> <span class="pl-en">execute</span>(<span class="pl-s1">self</span>, <span class="pl-s1">version</span>:<span class="pl-smi">str</span>, <span class="pl-c1">**</span><span class="pl-s1">kwargs</span>):
+        <span class="pl-k">try</span>:
+            <span class="pl-s1">valueOne</span>:<span class="pl-smi">str</span> <span class="pl-c1">=</span> <span class="pl-s1">kwargs</span>[<span class="pl-s">"put_required_parameters_here"</span>]
+            <span class="pl-s1">valueTwo</span>:<span class="pl-smi">int</span> <span class="pl-c1">=</span> <span class="pl-s1">kwargs</span>[<span class="pl-s">"likethis"</span>]
+            <span class="pl-s1">valueThree</span>:<span class="pl-s1">dict</span>[<span class="pl-smi">str</span>,<span class="pl-smi">str</span>] <span class="pl-c1">=</span> <span class="pl-s1">kwargs</span>[<span class="pl-s">"orthis"</span>]
+            
+            <span class="pl-c">#write here the execution code of your module</span>
+            <span class="pl-c">#calling other functions instead of writing everything here will make it better</span>
+            
+            <span class="pl-k">return</span> <span class="pl-en">ModuleResultType</span>(<span class="pl-c1">None</span>,{<span class="pl-s">"put_expected_return_values_here"</span>:<span class="pl-s1">yourStrReturnValue</span>,<span class="pl-s">"example"</span>:<span class="pl-s1">yourBoolReturnValue</span>})
+	<span class="pl-k">except</span> <span class="pl-v">Exception</span> <span class="pl-k">as</span> <span class="pl-s1">e</span>:
+        	<span class="pl-c">#remember that catching exceptions will prevent traceback from being printed.</span>
+        	<span class="pl-c">#if you want to print it, for debug purposes, uncomment this:</span>
+        	<span class="pl-c">#import traceback</span>
+        	<span class="pl-c">#print(traceback.format_exc())</span>
+            
+		<span class="pl-k">return</span> <span class="pl-en">ModuleResultType</span>(<span class="pl-s1">e</span>,{})</pre></div>
 <div class="markdown-heading"><h2 class="heading-element">GUI mode</h2><a id="user-content-gui-mode" class="anchor" aria-label="Permalink: GUI mode" href="#gui-mode"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Opifex can run in an intuitive <strong>GUI mode</strong>:</p>
 <p><a href="source/img/opifex-gui.png"></a></p><div><a target="_blank" rel="noopener noreferrer" href="source/img/opifex-gui.png"><img src="source/img/opifex-gui.png" width="600" style="max-width: 100%;"></a></div><p></p>
@@ -219,12 +252,10 @@ Be careful to put all your code in functions: anything outside them will be run 
 </ul>
 <p>The following settings are the ones you might be interested in changing the most.</p>
 <div class="markdown-heading"><h3 class="heading-element">Window size</h3><a id="user-content-window-size" class="anchor" aria-label="Permalink: Window size" href="#window-size"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<pre><code>windowSize:tuple[int,int] = (1000,800)
-</code></pre>
+<div class="highlight highlight-source-python"><pre><span class="pl-s1">windowSize</span>:<span class="pl-s1">tuple</span>[<span class="pl-smi">int</span>,<span class="pl-smi">int</span>] <span class="pl-c1">=</span> (<span class="pl-c1">1000</span>,<span class="pl-c1">800</span>)</pre></div>
 <p>Size of the Opifex window in GUI mode upon startup (in pixels, width and height).</p>
 <div class="markdown-heading"><h3 class="heading-element">GUI Themes</h3><a id="user-content-gui-themes" class="anchor" aria-label="Permalink: GUI Themes" href="#gui-themes"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<pre><code>style:str = p+"source/qt/light.qss"
-</code></pre>
+<div class="highlight highlight-source-python"><pre><span class="pl-s1">style</span>:<span class="pl-smi">str</span> <span class="pl-c1">=</span> <span class="pl-s1">p</span><span class="pl-c1">+</span><span class="pl-s">"source/qt/light.qss"</span></pre></div>
 <p>Path to the stylesheet used for Opifex in GUI mode. Any stylesheet can be used, as long as it's in the Qt Stylesheet format.</p>
 <p>These are the available stylesheets in a standard Opifex installation:</p>
 <ul>
@@ -237,10 +268,9 @@ Be careful to put all your code in functions: anything outside them will be run 
 </ul>
 <div class="markdown-heading"><h3 class="heading-element">Localization settings</h3><a id="user-content-localization-settings" class="anchor" aria-label="Permalink: Localization settings" href="#localization-settings"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Currently, Opifex has not been translated to any language other than English <strong>yet</strong>. However, there are still some module settings which should be changed if you desire to use such modules in another language.</p>
-<pre><code>piperModel:str = sourceFolder+"voice/en_US-lessac-medium.onnx"
-alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
-alignerModel:str = sourceFolder+"aligner/english_mfa"
-</code></pre>
+<div class="highlight highlight-source-python"><pre><span class="pl-s1">piperModel</span>:<span class="pl-smi">str</span> <span class="pl-c1">=</span> <span class="pl-s1">sourceFolder</span><span class="pl-c1">+</span><span class="pl-s">"voice/en_US-lessac-medium.onnx"</span>
+<span class="pl-s1">alignerDict</span>:<span class="pl-smi">str</span> <span class="pl-c1">=</span> <span class="pl-s1">sourceFolder</span><span class="pl-c1">+</span><span class="pl-s">"aligner/english_us_mfa.dict"</span>
+<span class="pl-s1">alignerModel</span>:<span class="pl-smi">str</span> <span class="pl-c1">=</span> <span class="pl-s1">sourceFolder</span><span class="pl-c1">+</span><span class="pl-s">"aligner/english_mfa"</span></pre></div>
 <p>These variables contain paths to models and dictionaries for the <em>TTS</em> module (which uses the software <em>PiperTTS</em>) and for the <em>Aligner</em> module (which uses <em>Montreal Forced Aligner</em>). Only the English files for these programs are bundled with Opifex, but you can download models for other languages from their respective websites (<a href="https://huggingface.co/rhasspy/piper-voices/tree/main" rel="nofollow">Piper</a>, <a href="https://github.com/MontrealCorpusTools/mfa-models">MFA</a>). Refer to their documentation for troubleshooting.</p>
 <div class="markdown-heading"><h2 class="heading-element">Credits and info</h2><a id="user-content-credits-and-info" class="anchor" aria-label="Permalink: Credits and info" href="#credits-and-info"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>All code for Opifex has been written by <strong>prtp</strong> (<a href="https://github.com/Vprtp">Vprtp</a> on GitHub).<br>

@@ -149,10 +149,10 @@ def process_html_to_image(html_template_path, data=None, window_size=(1080, 1080
         if html_output_path.exists() and html_output_path != original_path:
             html_output_path.unlink()
 
-class Screenshot(BaseModule):
+class ScreenshotPage(BaseModule):
     def __init__(self):
-        self.name = "Screenshot"
-        self.description = "Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Returns the path to the generated image.\n\nParameters:\n-template: Path to the HTML template\n-data: Dictionary with parameters that should be filled in the template {'Parameter name':Value}\n-size: Tuple (width, height), in pixel, that indicate the web window size to visualize the HTML template"
+        self.name = "ScreenshotPage"
+        self.description = "Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image.\n\nParameters:\n-template: Path to the HTML template\n-data: Dictionary with parameters that should be filled in the template {'Parameter name':Value}\n-size: Tuple (width, height), in pixel, that indicate the web window size to visualize the HTML template"
         self.requiredArgs = [("template",str),("data",dict),("size",tuple[int,int])]
         self.returnedDataTypes = [("destination",str)]
         self.dependencies = []

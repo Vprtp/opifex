@@ -16,7 +16,7 @@ outputFolder:str = p+"generated/"
 #DEFAULT MODULES CONFIGS
 
 class Theme: #DO NOT change this. it's used to define other variables later
-    def __init__(self, color:str="&000000FF", font:str="Arial", fontSize:int=16, alignment:int=5, contourWidth:int=0, countourColor:str=None):
+    def __init__(self, color:str="&HFF000000", font:str="Arial", fontSize:int=16, alignment:int=5, contourWidth:int=0, countourColor:str=None):
         """
         Theme class (mainly meant for FFmpeg use cases, but is fine for everything)
         Parameters:

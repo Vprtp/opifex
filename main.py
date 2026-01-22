@@ -8,7 +8,7 @@ from typing import get_origin, get_args
 import subprocess
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.4" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
+VERSION = "0.1.5" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -176,6 +176,8 @@ class TypeInputFactory:
         
         # Create scroll area for items
         scroll = QtWidgets.QScrollArea()
+        scroll.setProperty("class", "value_container")
+       
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -248,6 +250,7 @@ class TypeInputFactory:
         layout.addWidget(add_btn)
         
         scroll = QtWidgets.QScrollArea()
+        scroll.setProperty("class", "value_container")
         scroll.setWidgetResizable(True)
         scroll.setMaximumHeight(200)
         
@@ -461,7 +464,7 @@ class singleUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         # run init functions
-        self.setupConsoleRedirect() #REMEMBER TO DISABLE THIS WHEN DEBUGGING AND A CRASH HAPPENS ON STARTUP
+        self.setupConsoleRedirect() #REMEMBER TO DISABLE THIS WHEN DEBUGGING AND A CRASH HAPPENS ON STARTUP, OR WHEN TRYING TO READ OUTPUT FROM EXTERNAL PROCESSES
         self.selectedModule: str = ""
         self.moduleParams:list[QtWidgets.QWidget] = []
         self.updateModuleList()

@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import random
 import screenshot
@@ -116,6 +117,51 @@ class FFmpeg:
         return None
 
     @staticmethod
+    def getFontPath(font_name, extensions=None) -> None | str:
+        if extensions is None:
+            extensions = ['.ttf', '.otf', '.ttc']
+        
+        system = platform.system()
+        font_dirs = []
+        
+        if system == "Windows":
+            font_dirs = [
+                os.path.join(os.environ.get('WINDIR', 'C:\\Windows'), 'Fonts'),
+                os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Microsoft', 'Windows', 'Fonts')
+            ]
+        elif system == "Darwin":  # macOS
+            font_dirs = [
+                '/Library/Fonts/',
+                '/System/Library/Fonts/',
+                os.path.expanduser('~/Library/Fonts/')
+            ]
+        else:  # Linux and others
+            font_dirs = [
+                '/usr/share/fonts/',
+                '/usr/local/share/fonts/',
+                os.path.expanduser('~/.fonts/'),
+                os.path.expanduser('~/.local/share/fonts/')
+            ]
+        
+        # Search for font
+        for font_dir in font_dirs:
+            if os.path.exists(font_dir):
+                for root, dirs, files in os.walk(font_dir):
+                    for file in files:
+                        file_lower = file.lower()
+                        font_lower = font_name.lower()
+                        
+                        # Check if filename contains font name (with or without extension)
+                        base_name = os.path.splitext(file_lower)[0]
+                        if font_lower in base_name:
+                            # Check if it's a valid font extension
+                            if any(file_lower.endswith(ext) for ext in extensions):
+                                full_path = os.path.join(root, file)
+                                return full_path
+        
+        return None
+
+    @staticmethod
     def shiftTimestamp(ts, offset) -> str:
         """Shift SRT timestamp string by offset (seconds)."""
         h, m, s = ts.split(":")
@@ -173,6 +219,58 @@ class FFmpeg:
                         text = "\\N".join(text_lines).replace("{", "\\{")
                         f.write(f"Dialogue: 0,{start},{end},Default,,0,0,0,,{{\\pos({int(resolution[0]/2)},{int(resolution[1]/2)})}}{text}\n")
                     i += 1
+
+    @staticmethod
+    def bgrToHex(color_str: str, include_alpha: bool = False) -> str:
+        """
+        Convert BGR color string "&HAABBGGRR" to FFmpeg hex format.
+        
+        Args:
+            color_str: Color string in format "&HAABBGGRR" where:
+                    &H = hex prefix
+                    AA = alpha (00=transparent, FF=opaque)
+                    BB = blue component
+                    GG = green component
+                    RR = red component
+            include_alpha: If True, returns "0xRRGGBBAA" format with alpha at end.
+                        If False, returns "0xRRGGBB" format (default, alpha ignored).
+        
+        Returns:
+            String in format "0xRRGGBB" or "0xRRGGBBAA"
+        
+        Examples:
+            >>> bgr_to_ffmpeg_hex("&HFFA0B0C0")
+            '0xC0B0A0'
+            
+            >>> bgr_to_ffmpeg_hex("&H80A0B0C0", include_alpha=True)
+            '0xC0B0A080'
+        """
+        # Remove the "&H" prefix
+        if not color_str.upper().startswith("&H"):
+            raise ValueError(f"Invalid format: expected '&H' prefix, got {color_str}")
+        
+        hex_str = color_str[2:].upper()  # Remove "&H"
+        
+        # Validate length
+        if len(hex_str) != 8:
+            raise ValueError(f"Invalid length: expected 8 hex digits after &H, got {len(hex_str)}")
+        
+        # Parse components
+        try:
+            aa = hex_str[0:2]  # Alpha
+            bb = hex_str[2:4]  # Blue
+            gg = hex_str[4:6]  # Green
+            rr = hex_str[6:8]  # Red
+        except IndexError:
+            raise ValueError(f"Invalid format: could not parse components from {color_str}")
+        
+        # Convert to FFmpeg format
+        if include_alpha:
+            # Format: 0xRRGGBBAA
+            return f"0x{rr}{gg}{bb}{aa}"
+        else:
+            # Format: 0xRRGGBB (alpha ignored)
+            return f"0x{rr}{gg}{bb}"
 
     @staticmethod
     def concatenate(paths:list[str], endPath:str, isTemp=True) -> None: #if isTemp=True, endPath will be added to tempFiles, so it will be deleted when calling clearTemp
@@ -308,6 +406,76 @@ class FFmpeg:
             tempFiles.append(endPath)
 
     @staticmethod
+    def addText(videoPath:str, text:str, duration:tuple[float,float], endPath:str, position:tuple[int,int]|int = (0,0), margin:int = 0,  font:str="Arial", fontSize:int=16, color:str = "&HFF000000", isTemp=True) -> None:
+        """
+        Add text to a video.
+
+        Parameter "position" can either be a tuple[int,int] containing X and Y coordinates or can be one of the following ints:
+        - '1' for top left
+        - '2' for top center      Visualization: +-------------+
+        - '3' for top right                      | 1    2    3 |
+        - '4' for middle left                    | 4    5    6 |
+        - '5' for middle center                  | 7    8    9 |
+        - '6' for middle right                   +-------------+
+        - '7' for bottom left
+        - '8' for bottom center
+        - '9' for bottom right
+
+        Parameter "margin" (int, representing pixels) is only used when position isn't tuple[int,int]. It defines an offset from borders.
+
+        Parameter "duration" is tuple[float,float] of (begin time, end time)
+
+        Parameter "color" is in BGR, formatted &HAABBGGRR, &H=hex, AA=alpha(FF is opaque)
+        """
+        coordsExpression:tuple[str,str] = ("0", "0")
+        if type(position) == int:
+            if position not in range(1, 10):
+                raise ValueError(f"Position must be 1-9 or tuple, got {position}")
+            expX:str = "0"
+            expY:str = "0"
+            #find expression to use for X coords
+            match position:
+                case 1 | 4 | 7:
+                    expX = f"{margin}"
+                case 2 | 5 | 8:
+                    expX = "(w-text_w)/2"
+                case 3 | 6 | 9:
+                    expX = f"(w-text_w)-{margin}"
+            #find expression to use for Y coords
+            match position:
+                case 1 | 2 | 3:
+                    expY = f"{margin}"
+                case 4 | 5 | 6:
+                    expY = "(h-text_h)/2"
+                case 7 | 8 | 9:
+                    expY = f"(h-text_h)-{margin}"
+            #put them together
+            coordsExpression = (expX, expY)
+        else:
+            coordsExpression:tuple[str,str] = (str(position[0]), str(position[1]))
+
+        if os.path.isfile(font):
+            fontFile = font
+        else:
+            fontFile = FFmpeg.getFontPath(font)
+            if fontFile is None:
+                raise LookupError(f"Unable to find path for default font '{font}'.")
+
+        escapedText = text.replace("'", "'\"'\"'")
+
+        subprocess.run([
+            "ffmpeg",
+            "-v", "error",
+            "-i", videoPath,
+            "-vf", f"drawtext=fontfile='{fontFile}':text='{escapedText}':x={coordsExpression[0]}:y={coordsExpression[1]}:fontsize={fontSize}:fontcolor={FFmpeg.bgrToHex(color)}:enable='between(t,{duration[0]},{duration[1]})'",
+            "-c:a", "copy",
+            endPath
+        ], check=True) 
+
+        if isTemp:
+            tempFiles.append(endPath)
+
+    @staticmethod
     def addSubtitles(videoPath:str, subtitlesPath:str, theme:Theme, endPath:str, offset:float=0, isTemp=True):
         assFile = tempFolder + os.path.splitext(os.path.basename(subtitlesPath))[0] + ".ass" #obtain the file path for the ass subtitles file by concatenating tempFolder, the subtitlesPath file name (with no extension) and the extension ".ass"
         FFmpeg.srtToAss(FFmpeg.getSize(videoPath),subtitlesPath,assFile,theme.font,theme.fontSize,theme.color,theme.contourColor,theme.contourWidth,theme.alignment,offset)
@@ -384,7 +552,7 @@ def computeVideo(endPath:str, title:str, subtitlesPath:str, titleAudioPath:str, 
 class VideoGenerator(BaseModule):
     def __init__(self):
         self.name = "VideoGenerator"
-        self.description = "Module for generating a video based on given title, subtitles, audio for both title and text, and a destination path.\n\nParameters:\n-title: Title text\n-subtitles: Path to subtitles file\n-titleAudio: Path to the title audio file\n-textAudio: Path to the text audio file\n-destination: Destination path for the generated video"
+        self.description = "Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path.\n\nParameters:\n-title: Title text\n-subtitles: Path to subtitles file\n-titleAudio: Path to the title audio file\n-textAudio: Path to the text audio file\n-destination: Destination path for the generated video"
         self.requiredArgs = [("title",str),("subtitles",str),("titleAudio",str),("textAudio",str),("destination",str)]
         self.returnedDataTypes = []
         self.dependencies = []
@@ -395,3 +563,4 @@ class VideoGenerator(BaseModule):
             return ModuleResultType(None,{})
         except Exception as e:
             return ModuleResultType(e,{})
+

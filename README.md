@@ -1,6 +1,6 @@
 # Opifex
 
-Manual for version `0.1.4`.
+Manual for version `0.1.5`.
 
 [<div style="text-align: center"><img src="source/img/logo.png" width="200"/></div>](source/img/logo.png)
 
@@ -10,20 +10,20 @@ _Opifex_ is a modular tool designed for automated content creation (videos, imag
 
 Clone the repository.
 
-```
+```bash
 git clone https://github.com/Vprtp/opifex.git
 cd opifex
 ```
 
 Run the installation script.
 
-```
+```bash
 bash install.sh
 ```
 
 Start Opifex.
 
-```
+```bash
 bash main.sh
 ```
 
@@ -44,7 +44,7 @@ ModuleResultType: exception <None> data <{'paths': ['/path/to/file.mp4']}>
 
 where `/path/to/file.mp4` is the path to the generated video.
 
-## Installation
+## Installation (in detail)
 
 After downloading (or cloning) the repository, Opifex can be properly set up by running `bash install.sh` in the main directory.
 
@@ -82,20 +82,22 @@ Many modules are already part of Opifex by default, but everyone is free to writ
 | Aligner | alignSRT.py | Module for generating subtitles from a given audio and its transcript. | audio-(str) transcript-(str) output-(str) | textgridOutput-(str) srtOutput-(str) | / |
 | ImageFinder | image_finder.py | Module that finds and downloads online images onto a given directory. | search-(str) destDir-(str) | / | / |
 | RSS | rss.py | Module to fetch info from an RSS feed and its individual articles. | feedURL-(str) getFullArticle-(bool) | feedInfo-(dict) | / |
-| Reddit | reddit.py | Module for fetching reddit posts. | url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int) | title-(str) description-(str) upvotes-(int) comments-(list) | Screenshot |
+| RecordPage | record.py | Module that records a video of an HTML template with given parameter values. Note that the template's animations in the video might look off, depending on the host machine's performance. | template-(str) data-(dict) size-(tuple) duration-(float) fps-(int) | destination-(str) | ScreenshotPage |
+| Reddit | reddit.py | Module for fetching reddit posts. | url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int) | title-(str) description-(str) upvotes-(int) comments-(list) | ScreenshotPage |
 | RedditVideoGenerator | reddit_video_generator.py | Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated) | url-(str) commentsOrDesc-(bool) accountName-(str) | paths-(list) | Reddit SimpleVideoGenerator URLunshortener |
-| Screenshot | screenshot.py | Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Returns the path to the generated image. | template-(str) data-(dict) size-(tuple) | destination-(str) | / |
+| ScreenshotPage | screenshot.py | Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image. | template-(str) data-(dict) size-(tuple) | destination-(str) | / |
 | SimpleVideoGenerator | simple_video_generator.py | Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated) | content-(dict) accountName-(str) | paths-(list) | TTS Aligner VideoGenerator |
 | TTS | tts.py | Module for generating speech from a given text. | text-(str) | destination-(str) | / |
 | URLunshortener | unshortenURL.py | Module that returns the final URL from redirections by a given one (thus 'unshortening' shortened URLs) | url-(str) rmpars-(bool) | url-(str) | / |
-| VideoGenerator | video.py | Module for generating a video based on given title, subtitles, audio for both title and text, and a destination path. | title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str) | / | / |
+| VideoGenerator | video.py | Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path. | title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str) | / | / |
 
 ### Creating modules
 
 Creating modules is simple: all you have to do is write a Python script that does what you want it to do and attach a personalized `basemodule.BaseModule` class at the end of it, so that it can be recognized by Opifex.  
-Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.
+Be careful to put all your code in functions: anything outside them will be run when loading the module, because they are being imported as Python libraries.  
+This is the structure of the `BaseModule` class:
 
-```
+```python
 class BaseModule:
     def __init__(self):
         self.name = ABC
@@ -112,8 +114,10 @@ class BaseModule:
         """Execute the module and return results"""
         pass
 ```
-`YourModule.execute()` must return a variable of type `basemodule.ModuleResultType`, which will contain information about possible execution errors and data returned by the module:
-```
+
+`YourModule.execute()` must return a variable of type `basemodule.ModuleResultType`, which will contain information about possible execution errors and data returned by the module.  
+This is the structure of the `ModuleResultType` class:
+```python
 class ModuleResultType:
     def __init__(self, exception:Exception|None, data:Dict[str, Any]):
         self.exception = exception
@@ -121,6 +125,37 @@ class ModuleResultType:
     
     def __str__(self):
         return f"ModuleResultType: exception <{str(self.exception)}> data <{str(self.data)}>"
+```
+
+So, in your module, you should include something like this:
+```python
+from basemodule import BaseModule, ModuleResultType
+
+class YourModule(BaseModule):
+    def __init__(self):
+        self.name = "YourModelsName"
+        self.description = "Description of your module (the more detailed it is, the better)"
+        self.requiredArgs = [("put_required_parameters_here",str),("likethis",int),("orthis",dict[str,str])]
+        self.returnedDataTypes = [("put_expected_returned_values_here",str),("example",bool)]
+        self.dependencies = ["WriteHere","NamesOfModules","ThatThisOne","DependsOn"]
+    
+    def execute(self, version:str, **kwargs):
+        try:
+            valueOne:str = kwargs["put_required_parameters_here"]
+            valueTwo:int = kwargs["likethis"]
+            valueThree:dict[str,str] = kwargs["orthis"]
+            
+            #write here the execution code of your module
+            #calling other functions instead of writing everything here will make it better
+            
+            return ModuleResultType(None,{"put_expected_return_values_here":yourStrReturnValue,"example":yourBoolReturnValue})
+	except Exception as e:
+        	#remember that catching exceptions will prevent traceback from being printed.
+        	#if you want to print it, for debug purposes, uncomment this:
+        	#import traceback
+        	#print(traceback.format_exc())
+            
+		return ModuleResultType(e,{})
 ```
 
 ## GUI mode
@@ -152,7 +187,7 @@ The following settings are the ones you might be interested in changing the most
 
 ### Window size
 
-```
+```python
 windowSize:tuple[int,int] = (1000,800)
 ```
 
@@ -160,7 +195,7 @@ Size of the Opifex window in GUI mode upon startup (in pixels, width and height)
 
 ### GUI Themes
 
-```
+```python
 style:str = p+"source/qt/light.qss"
 ```
 
@@ -175,7 +210,7 @@ These are the available stylesheets in a standard Opifex installation:
 
 Currently, Opifex has not been translated to any language other than English **yet**. However, there are still some module settings which should be changed if you desire to use such modules in another language.
 
-```
+```python
 piperModel:str = sourceFolder+"voice/en_US-lessac-medium.onnx"
 alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
 alignerModel:str = sourceFolder+"aligner/english_mfa"
