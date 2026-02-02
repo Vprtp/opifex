@@ -16,7 +16,7 @@ outputFolder:str = p+"generated/"
 #DEFAULT MODULES CONFIGS
 
 class Theme: #DO NOT change this. it's used to define other variables later
-    def __init__(self, color:str="&HFF000000", font:str="Arial", fontSize:int=16, alignment:int=5, contourWidth:int=0, countourColor:str=None):
+    def __init__(self, color:str="&HFF000000", font:str="Arial", fontSize:int=16, alignment:int=5, contourWidth:int=0, countourColor:str=""):
         """
         Theme class (mainly meant for FFmpeg use cases, but is fine for everything)
         Parameters:
@@ -51,6 +51,8 @@ alignerDict:str = sourceFolder+"aligner/english_us_mfa.dict"
 alignerModel:str = sourceFolder+"aligner/english_mfa"
 videoPool:list[str] = [sourceFolder+"video/background-gta01.mp4", sourceFolder+"video/background-gta02.mp4", sourceFolder+"video/background-mc01.mp4", sourceFolder+"video/background-mc02.mp4", sourceFolder+"video/background-msc01.mp4", sourceFolder+"video/background-msc02.mp4"]
 dingSound:str = sourceFolder+"audio/ding.wav"
-titleHtmlTemplate:str = sourceFolder+"img/reddit.html"
+
+titleHtmlTemplate:str = sourceFolder+"web/reddit.html"
+newsHtmlTemplate:str = sourceFolder+"web/news.html"
 
 imageSearchProvider:str = "https://www.ecosia.org/images?q={terms}"

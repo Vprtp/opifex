@@ -9,13 +9,13 @@ class ModuleResultType:
     def __str__(self):
         return f"ModuleResultType: exception <{str(self.exception)}> data <{str(self.data)}>"
 
-class BaseModule:
+class BaseModule(ABC):
     def __init__(self):
-        self.name = ABC
-        self.description = ABC
-        self.requiredArgs:List[Tuple[str,type]] = ABC #list of required parameters as (name, type) pairs
-        self.returnedDataTypes:List[Tuple[str,type]] = ABC #list of returned key values and respective data types in returned data dict of ModuleResultType
-        self.dependencies:List[str] = ABC #list of "dependencies" (other plugins' name) required for the plugin to work
+        self.name:str = ""
+        self.description:str = ""
+        self.requiredArgs:List[Tuple[str,type]] = [] #list of required parameters as (name, type) pairs
+        self.returnedDataTypes:List[Tuple[str,type]] = [] #list of returned key values and respective data types in returned data dict of ModuleResultType
+        self.dependencies:List[str] = [] #list of "dependencies" (other modules' name) required for the module to work
 
     def __str__(self):
         return f"Module <{self.name}>: {self.description.split('\n')[0]}" #prints first line of description, which should always be just the summary. hopefully.

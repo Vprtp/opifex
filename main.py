@@ -1,4 +1,5 @@
-import os, shutil
+import os
+import shutil
 import config
 import sys
 from io import TextIOBase
@@ -8,7 +9,7 @@ from typing import get_origin, get_args
 import subprocess
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.5" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
+VERSION = "0.1.6" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -455,10 +456,10 @@ class singleUI(QtWidgets.QWidget):
         # finalize splitter
         self.hSplitter.addWidget(self.left)
         self.hSplitter.addWidget(self.right)
-        self.hSplitter.setSizes([self.sizes[0]*0.2, self.sizes[0]*0.8])
+        self.hSplitter.setSizes([int(self.sizes[0]*0.2), int(self.sizes[0]*0.8)])
         self.vSplitter.addWidget(self.hSplitter)
         self.vSplitter.addWidget(self.bottom)
-        self.vSplitter.setSizes([self.sizes[1]*0.7, self.sizes[1]*0.3])
+        self.vSplitter.setSizes([int(self.sizes[1]*0.7), int(self.sizes[1]*0.3)])
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.vSplitter)
         self.setLayout(self.layout)
@@ -472,12 +473,13 @@ class singleUI(QtWidgets.QWidget):
     @QtCore.Slot()
     def updateModuleList(self):
         self.moduleList.clear()
+        num:int = modules.loadLibs()
         modules.loadModules()
         for module in modules.modules:
             self.moduleList.addItem(QtWidgets.QListWidgetItem(module))
         self.renderModule("")
         self.selectedModule = ""
-        print(f"Loaded {len(modules.modules)} modules.")
+        print(f"Loaded {len(modules.modules)} modules and {num} libraries.")
     
     @QtCore.Slot()
     def updateSelectedModule(self, item):
@@ -666,6 +668,9 @@ def main(mode:str, gui:bool):
 
                         """)
                 e = True
+                print("Loading libraries...")
+                num:int = modules.loadLibs()
+                print(f"Done! Loaded {num} libraries.")
                 print("Loading modules...")
                 modules.loadModules()
                 print(f"Done! Loaded {len(modules.modules)} modules.")

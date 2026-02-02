@@ -12,7 +12,7 @@ userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/2010010
               "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A",
               "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Edge/79.0.1451.30 Safari/537.36"]
 
-def getRandomHeaders() -> dict[str]:
+def getRandomHeaders() -> dict[str,str]:
     return {'User-Agent': choice(userAgents)}
 
 def get(url:str, fullArticle:bool) -> dict:
@@ -54,7 +54,7 @@ def get(url:str, fullArticle:bool) -> dict:
         tempentry["link"] = entry.link
         tempentry["time"] = int(time.mktime(entry.published_parsed))
         if fullArticle:
-            article = requests.get(entry.link, headers=getRandomHeaders()).text
+            article = requests.get(str(entry.link), headers=getRandomHeaders()).text
             tempentry["content"] = extract(article)
         else:
             tempentry["content"] = extract(entry.summary)

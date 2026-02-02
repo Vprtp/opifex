@@ -116,7 +116,7 @@ def cleanText(original:str, allowed:list[str]=allowedChars_EN, htmlCodes:dict[st
     filtered = ''.join([char for char in filtered if char in allowed])
     return filtered
 
-def generate(text: str, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lenghtScale:float = 1.2) -> tuple[str, str]:
+def generate(text: str, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lenghtScale:float = 1.2) -> str:
     timestamp: int = int(time.time())
     
     # Create the output directory
@@ -159,7 +159,7 @@ def generate(text: str, clean:bool = True, textVoice: str = model, destination: 
             check=True, 
         )
     
-    return (textDestination)
+    return textDestination
 
 class TTS(BaseModule):
     def __init__(self):

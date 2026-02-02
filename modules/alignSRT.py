@@ -6,7 +6,7 @@ from typing import List
 import config
 from basemodule import BaseModule, ModuleResultType
 
-def generateSubtitles(audioPath: str, transcript: str, outputDir: str, convertToSRT:bool = True) -> tuple[str,str]:
+def generateSubtitles(audioPath: str, transcript: str, outputDir: str|Path, convertToSRT:bool = True) -> tuple[str,str]:
     """
     Align a single audio file with its transcript using MFA. Warning: will return a SRT path no matter if the conversion is actually done.
     
@@ -74,7 +74,7 @@ def generateSubtitles(audioPath: str, transcript: str, outputDir: str, convertTo
     return (textgridOutput,srtOutput)
 
 #converter:
-def textgridToSrt(textgrid_path: str, srt_path: str, tier_name: str = None) -> None:
+def textgridToSrt(textgrid_path: str, srt_path: str, tier_name: str|None = None) -> None:
     """
     Convert a Praat TextGrid file to SRT subtitle format.
     

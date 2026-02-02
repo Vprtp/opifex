@@ -6,6 +6,8 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
+SKIP_SYSTEM_DEPS=false
+
 # Configuration variables
 MINICONDA_INSTALL_DIR="$HOME/miniconda3"
 MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
@@ -196,7 +198,9 @@ main() {
     print_info "The following will be installed/configured:"
     echo "  - Miniconda3 (if missing)"
     echo "  - Conda environment: $ENV_NAME"
-    echo "  - System dependencies"
+    if [ "$SKIP_SYSTEM_DEPS" = false ]; then
+        echo "  - System dependencies"
+    fi
     echo "  - Program source files"
     echo
 
@@ -218,15 +222,19 @@ main() {
 
     setup_conda_env || exit 1
 
-    print_info "Checking system dependencies..."
-    missing_deps=$(check_system_deps)
-
-    if [ $? -ne 0 ]; then
-        print_warn "Missing dependencies: $missing_deps"
-        sudo true || { print_error "sudo failed"; exit 1; }
-        install_system_deps || exit 1
+    if [ "$SKIP_SYSTEM_DEPS" = true ]; then
+        print_warn "Skipping system dependency checks (--no-system-deps enabled)."
     else
-        print_info "All system dependencies installed."
+        print_info "Checking system dependencies..."
+        missing_deps=$(check_system_deps)
+
+        if [ $? -ne 0 ]; then
+            print_warn "Missing dependencies: $missing_deps"
+            sudo true || { print_error "sudo failed"; exit 1; }
+            install_system_deps || exit 1
+        else
+            print_info "All system dependencies installed."
+        fi
     fi
 
     download_and_extract || exit 1
@@ -249,6 +257,17 @@ main() {
     echo "Run with:  bash main.sh"
     echo
 }
+
+# Check for the --no-system-deps flag
+for arg in "$@"; do
+    case "$arg" in
+        --no-system-deps)
+            SKIP_SYSTEM_DEPS=true
+            ;;
+        *)
+            ;;
+    esac
+done
 
 main "$@"
 

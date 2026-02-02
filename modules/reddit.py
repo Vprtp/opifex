@@ -34,7 +34,7 @@ def getUpvotes(threadJSON, path:list=postUpvotesPath) -> int:
         ups = ups[path[i]]
     return ups
 
-def getDescription(threadJSON, path:list=descriptionJSONPath) -> int:
+def getDescription(threadJSON, path:list=descriptionJSONPath) -> str:
     description = threadJSON
     for i in range(len(path)):
         description = description[path[i]]

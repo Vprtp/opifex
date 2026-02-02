@@ -32,7 +32,7 @@ def formatURLFriendly(text, use_plus_for_spaces=True):
     else:
         return urllib.parse.quote(text, safe='')
 
-def getRandomHeaders() -> dict[str]:
+def getRandomHeaders() -> dict[str,str]:
     return {'User-Agent': choice(userAgents)}
 
 def getImageURLs(pageURL:str) -> list[str]:
@@ -41,7 +41,7 @@ def getImageURLs(pageURL:str) -> list[str]:
     images:list[str] = []
     imgs = soup.find_all("img")
     for img in imgs:
-        images.append(img['src'])
+        images.append(str(img['src']))
     return images
 
 #this could also be made with requests.get, but right now this approach is easier

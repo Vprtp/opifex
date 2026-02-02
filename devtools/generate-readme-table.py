@@ -16,17 +16,17 @@ def main():
         rets = ""
         deps = ""
         if len(module.requiredArgs) == 0:
-            reqs = " /"
+            reqs = " N/A"
         else:
             for req in module.requiredArgs:
                 reqs = f"{reqs} {req[0]}-({req[1].__name__})"
         if len(module.returnedDataTypes) == 0:
-            rets = " /"
+            rets = " N/A"
         else:
             for ret in module.returnedDataTypes:
                 rets = f"{rets} {ret[0]}-({ret[1].__name__})"
         if len(module.dependencies) == 0:
-            deps = " /"
+            deps = " N/A"
         else:
             for dep in module.dependencies:
                 deps = f"{deps} {dep}"
