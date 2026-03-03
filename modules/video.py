@@ -1,10 +1,11 @@
 import random
 import screenshot
 import time
+from pathlib import Path
 import config
 from config import Theme
 from basemodule import BaseModule, ModuleResultType
-from ffmpeghandler import *
+from lib.ffmpeghandler import *
 
 accountName:str = config.accountName
 
@@ -79,13 +80,13 @@ class VideoGenerator(BaseModule):
     def __init__(self):
         self.name = "VideoGenerator"
         self.description = "Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path.\n\nParameters:\n-title: Title text\n-subtitles: Path to subtitles file\n-titleAudio: Path to the title audio file\n-textAudio: Path to the text audio file\n-destination: Destination path for the generated video"
-        self.requiredArgs = [("title",str),("subtitles",str),("titleAudio",str),("textAudio",str),("destination",str)]
+        self.requiredArgs = [("title",str),("subtitles",str),("titleAudio",str),("textAudio",str),("destination",Path)]
         self.returnedDataTypes = []
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            computeVideo(kwargs["destination"],kwargs["title"],kwargs["subtitles"],kwargs["titleAudio"],kwargs["textAudio"])
+            computeVideo(str(kwargs["destination"].absolute()),kwargs["title"],kwargs["subtitles"],kwargs["titleAudio"],kwargs["textAudio"])
             return ModuleResultType(None,{})
         except Exception as e:
             return ModuleResultType(e,{})

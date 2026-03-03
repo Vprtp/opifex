@@ -2,13 +2,66 @@ import os
 import platform
 import subprocess
 import random
+from fontTools.misc.arrayTools import offsetRect
 from fontTools.ttLib import TTFont
 import datetime
 import re
+from PIL import Image
 from config import Theme, tempFolder
 
 #vars used for ffmpeg processing
 tempFiles:list[str] = []
+
+class ImageProcessing:
+    @staticmethod
+    def resize(image_path, output_path, target_size, method='stretch'):
+        """Resize image and save to file using PIL"""
+        with Image.open(image_path) as img:
+            # Convert to RGB if necessary (handles RGBA, P, etc.)
+            if img.mode not in ('RGB', 'L'):  # L is grayscale
+                img = img.convert('RGB')
+            
+            if method == 'stretch':
+                # Stretch/scale to exact dimensions
+                resized = img.resize(target_size, Image.Resampling.LANCZOS)
+                resized.save(output_path)
+                
+            elif method == 'cut':
+                # Center crop to target aspect ratio, then resize
+                img_ratio = img.width / img.height
+                target_ratio = target_size[0] / target_size[1]
+                
+                if img_ratio > target_ratio:
+                    # Image is wider than target
+                    new_height = img.height
+                    new_width = int(target_ratio * new_height)
+                    left = (img.width - new_width) // 2
+                    crop_box = (left, 0, left + new_width, new_height)
+                else:
+                    # Image is taller than target
+                    new_width = img.width
+                    new_height = int(new_width / target_ratio)
+                    top = (img.height - new_height) // 2
+                    crop_box = (0, top, new_width, top + new_height)
+                
+                cropped = img.crop(crop_box)
+                resized = cropped.resize(target_size, Image.Resampling.LANCZOS)
+                resized.save(output_path)
+                
+            elif method == 'borders':
+                # Maintain aspect ratio, add black borders
+                img.thumbnail(target_size, Image.Resampling.LANCZOS)
+                
+                # Create new image with black background
+                new_img = Image.new("RGB", target_size, (0, 0, 0))
+                
+                # Calculate position to center the thumbnail
+                paste_x = (target_size[0] - img.width) // 2
+                paste_y = (target_size[1] - img.height) // 2
+                
+                # Paste the thumbnail onto the black background
+                new_img.paste(img, (paste_x, paste_y))
+                new_img.save(output_path)
 
 class FFmpeg:
     @staticmethod
@@ -37,6 +90,19 @@ class FFmpeg:
         ], capture_output=True, text=True, check=True)
         result = result.stdout.strip().split(",")
         return (int(result[0]),int(result[1]))
+
+    @staticmethod
+    def getFramerate(path:str) -> int:
+        result = subprocess.run([
+            "ffprobe",
+            "-v", "error",
+            "-select_streams", "v",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            "-show_entries", "stream=r_frame_rate",
+            path
+        ], capture_output=True, text=True, check=True)
+        result = result.stdout.strip().split("/")
+        return round(float(result[0])/float(result[1]))
 
     @staticmethod
     def getKeyframes(path:str) -> list[float]:
@@ -256,21 +322,76 @@ class FFmpeg:
             return f"0x{rr}{gg}{bb}"
 
     @staticmethod
-    def concatenate(paths:list[str], endPath:str, isTemp=True) -> None: #if isTemp=True, endPath will be added to tempFiles, so it will be deleted when calling clearTemp
-        textFile = tempFolder + os.path.splitext(os.path.basename(endPath))[0] + ".txt" #obtain the file path for the temporary text file to store the video paths, by concatenating tempFolder, the endPath file name (with no extension) and the extension ".txt"
+    def concatenate(paths: list[str], endPath: str, reencode=False, isTemp=True) -> None:
+        """
+        Concatenate multiple video files.
+    
+        If reencode=False, inputs must already have identical codec parameters.
+        If reencode=True, each input is re-encoded to a common format (H.264, yuv420p,
+        stereo AAC at 44.1 kHz) before concatenation. The temporary normalised files
+        are automatically cleaned up.
+    
+        Args:
+            paths: List of input file paths.
+            endPath: Output file path.
+            reencode: If True, normalise all inputs to a common format.
+            isTemp: If True, endPath will be added to tempFiles for later cleanup.
+        """
+        # Create the concat list file
+        textFile = tempFolder + os.path.splitext(os.path.basename(endPath))[0] + ".txt"
         tempFiles.append(textFile)
-        with open(textFile, "w") as f:
-            for item in paths:
-                f.write(f"file '{item}'\n")
-        subprocess.run([
-            "ffmpeg", 
-            "-v", "error",
-            "-safe", "0",
-            "-f", "concat", 
-            "-i", textFile, 
-            "-c", "copy",
-            endPath,
-        ], check=True)
+
+        if reencode:
+            # Normalise each input to a common format
+            normalised_paths = []
+            for i, p in enumerate(paths):
+                norm = f"{tempFolder}norm_{random.randint(10000,99999)}_{i}.mp4"
+                subprocess.run([
+                    "ffmpeg",
+                    "-v", "error",
+                    "-i", p,
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-ac", "2",           # force stereo
+                    "-ar", "44100",        # force 44.1 kHz sample rate
+                    "-y",                  # overwrite if exists
+                    norm
+                ], check=True)
+                normalised_paths.append(norm)
+                tempFiles.append(norm)     # mark for cleanup
+
+            # Write the list of normalised files
+            with open(textFile, "w") as f:
+                for item in normalised_paths:
+                    f.write(f"file '{item}'\n")
+
+            # Concatenate using stream copy (all files are now compatible)
+            subprocess.run([
+                "ffmpeg",
+                "-v", "error",
+                "-safe", "0",
+                "-f", "concat",
+                "-i", textFile,
+                "-c", "copy",              # no re-encoding needed
+                endPath
+            ], check=True)
+        else:
+            # No normalisation: assume inputs are already compatible
+            with open(textFile, "w") as f:
+                for item in paths:
+                    f.write(f"file '{item}'\n")
+            subprocess.run([
+                "ffmpeg",
+                "-v", "error",
+                "-safe", "0",
+                "-f", "concat",
+                "-i", textFile,
+                "-c", "copy",
+                endPath
+            ], check=True)
+
+        # If the output is temporary, add it to the cleanup list
         if isTemp:
             tempFiles.append(endPath)
 
@@ -321,6 +442,41 @@ class FFmpeg:
             "-map", "0:v:0", 
             "-map", "1:a:0",
             "-shortest", 
+            endPath
+        ], check=True)
+        if isTemp:
+            tempFiles.append(endPath)
+
+    @staticmethod
+    def imageToVideo(imagePath:str, endPath:str, duration:float, framerate:int=30, isTemp=True) -> None:
+        """
+        Convert a given image to a video of given duration and frame rate.
+        """
+        subprocess.run([
+            "ffmpeg",
+            "-v", "error",
+            "-loop", "1",
+            "-i", imagePath,
+            "-t", str(duration),
+            "-r", str(framerate),
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            endPath
+        ], check=True)
+        if isTemp:
+            tempFiles.append(endPath)
+
+    @staticmethod
+    def applyVideoEffect(sourcePath:str, endPath:str, filter:str, isTemp=True) -> None:
+        """
+        Apply given filter effect (in standard FFmpeg notation) to a given video.
+        """
+        subprocess.run([
+            "ffmpeg",
+            "-v", "error",
+            "-i", sourcePath,
+            "-vf", filter,
+            "-c:a", "copy",
             endPath
         ], check=True)
         if isTemp:
@@ -384,6 +540,28 @@ class FFmpeg:
 
         if not matchesVideo:
             FFmpeg.concatenate(concatList,endPath,isTemp)
+
+        if isTemp and (not endPath in tempFiles):
+            tempFiles.append(endPath)
+
+    @staticmethod
+    def overlayVideo(backgroundVideo:str, foregroundVideo:str, endPath:str, chromakey:str = "&HFF00FF00", similarity:float=0.1, blend:float=0.1, isTemp=True) -> None:
+        """
+        Overlays a 'foregroundVideo' onto a 'backgroundVideo', saving the final result to 'endPath'.
+        Will apply a chroma-key filter with the color 'chromakey' (in BGR) and apply parameters 'similarity' and 'blend' to better specify the interested area.
+        """
+        filter:str = f"[1:v]chromakey=color={FFmpeg.bgrToHex(chromakey)}:similarity={similarity}:blend={blend}[ckout];[0:v][ckout]overlay[out]"
+        subprocess.run([
+            "ffmpeg",
+            "-v", "error",
+            "-i", backgroundVideo,
+            "-i", foregroundVideo,
+            "-filter_complex", filter,
+            "-map", "[out]",
+            "-map", "0:a?", #?=makes audio optional
+            "-c:a", "copy",
+            endPath
+        ], check=True)
 
         if isTemp and (not endPath in tempFiles):
             tempFiles.append(endPath)
@@ -473,5 +651,4 @@ class FFmpeg:
         ], check=True)
         if isTemp:
             tempFiles.append(endPath)
-
 

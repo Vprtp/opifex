@@ -29,12 +29,13 @@ class SimpleVideoGenerator(BaseModule):
         self.name = "SimpleVideoGenerator"
         self.description = "Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated)\n\nParameters:\n-content: Dictionary of titles and texts for each generated video\n-accountName: credits that will be shown in the video"
         self.requiredArgs = [("content",dict[str,str]),("accountName",str)]
-        self.returnedDataTypes = [("paths",list[str])]
+        self.returnedDataTypes = [("paths",list[pathlib.Path])]
         self.dependencies = ["TTS","Aligner","VideoGenerator"]
     
     def execute(self, version:str, **kwargs):
         try:
-            paths:list[str]= generate(kwargs["content"],kwargs["accountName"])
+            pathsTemp:list[str] = generate(kwargs["content"],kwargs["accountName"])
+            paths:list[pathlib.Path] = [pathlib.Path(item) for item in pathsTemp]
             return ModuleResultType(None,{"paths":paths})
         except Exception as e:
             print(traceback.format_exc())

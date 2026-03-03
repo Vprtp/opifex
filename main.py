@@ -7,9 +7,10 @@ import modules
 from PySide6 import QtCore, QtWidgets, QtGui
 from typing import get_origin, get_args
 import subprocess
+import pathlib
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.6" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
+VERSION = "0.1.7" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -80,7 +81,7 @@ class TypeInputFactory:
             if origin == list:
                 return TypeInputFactory._create_list_input(parent, item_type=args[0] if args else str)
             elif origin == tuple:
-                return TypeInputFactory._create_tuple_input(parent, item_type=args[0] if args else str)
+                return TypeInputFactory._create_tuple_input(parent, item_types=args)
             elif origin == dict:
                 key_type = args[0] if len(args) > 0 else str
                 value_type = args[1] if len(args) > 1 else str
@@ -101,6 +102,8 @@ class TypeInputFactory:
             return TypeInputFactory._create_dict_input(parent, key_type=str, value_type=str)  # Default to string
         elif value_type == tuple:
             return TypeInputFactory._create_tuple_input(parent, item_type=str)  # Default to string
+        elif value_type == pathlib.Path:
+            return TypeInputFactory._create_path_input(parent)
         else:
             return TypeInputFactory._create_fallback_input(parent)
     
@@ -122,7 +125,10 @@ class TypeInputFactory:
             elif widget._type_input_type == 'dict':
                 return TypeInputFactory._get_dict_value(widget)
             elif widget._type_input_type == 'tuple':
-                return tuple(TypeInputFactory._get_list_value(widget))
+                values = [TypeInputFactory.get_input_value(w) for w in widget._field_widgets]
+                return tuple(values)
+            elif widget._type_input_type == "path":
+                return pathlib.Path(widget._line_edit.text())
         else:
             # Fallback
             try:
@@ -221,17 +227,37 @@ class TypeInputFactory:
         item_layout.addWidget(item_widget, 1)
         item_layout.addWidget(remove_btn)
         
+        # Add the item container to the list's layout
         container._items_layout.addWidget(item_container)
+
+        # Create a horizontal separator line
+        separator = QtWidgets.QFrame()
+        separator.setFrameShape(QtWidgets.QFrame.HLine)
+        separator.setFrameShadow(QtWidgets.QFrame.Sunken)
+        container._items_layout.addWidget(separator)
+
+        # Store the input widget for value retrieval
         container._input_widgets.append(item_widget)
-        
-        remove_btn.clicked.connect(lambda: TypeInputFactory._remove_list_item(container, item_container))
-    
+
+        # Connect remove button, passing both the item container and its separator
+        remove_btn.clicked.connect(
+            lambda: TypeInputFactory._remove_list_item(container, item_container, separator)
+        )
+
     @staticmethod
-    def _remove_list_item(container, item_widget):
-        container._input_widgets = [w for w in container._input_widgets 
-                                  if w.parent() != item_widget]
-        item_widget.deleteLater()
-    
+    def _remove_list_item(container, item_container, separator):
+        # Remove the associated input widget from the stored list
+        # The input widget is a child of item_container
+        for i, w in enumerate(container._input_widgets):
+            if w.parent() == item_container:
+                del container._input_widgets[i]
+                break
+
+        # Delete the widgets
+        item_container.deleteLater()
+        separator.deleteLater()
+       
+
     @staticmethod
     def _create_dict_input(parent, key_type=str, value_type=str):
         container = QtWidgets.QWidget(parent)
@@ -247,7 +273,7 @@ class TypeInputFactory:
         # Add button with type info
         key_type_name = key_type.__name__ if hasattr(key_type, '__name__') else str(key_type)
         value_type_name = value_type.__name__ if hasattr(value_type, '__name__') else str(value_type)
-        add_btn = QtWidgets.QPushButton(f"+ Add {key_type_name}→{value_type_name} Entry")
+        add_btn = QtWidgets.QPushButton(f"+ Add {key_type_name}-{value_type_name} Entry")
         layout.addWidget(add_btn)
         
         scroll = QtWidgets.QScrollArea()
@@ -317,12 +343,65 @@ class TypeInputFactory:
         entry_widget.deleteLater()
     
     @staticmethod
-    def _create_tuple_input(parent, item_type=str):
-        # Reuse list input but mark as tuple
-        widget = TypeInputFactory._create_list_input(parent, item_type)
-        widget._type_input_type = 'tuple'
-        return widget
+    def _create_tuple_input(parent, item_types):
+        """
+        item_types: a tuple of types, one for each element in the tuple
+        """
+        container = QtWidgets.QWidget(parent)
+        container._type_input_type = "tuple"
+        container._item_types = item_types #store the sequence of types
+        container._field_widgets = []
+        layout = QtWidgets.QVBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        for i, typ in enumerate(item_types):
+            sub_layout = QtWidgets.QHBoxLayout()
+            #create a label
+            label = QtWidgets.QLabel(f"{i}:")
+            sub_layout.addWidget(label)
+            #create input widget for this field type
+            field_widget = TypeInputFactory.create_input_widget(typ)
+            sub_layout.addWidget(field_widget, 1)
+            layout.addLayout(sub_layout)
+            container._field_widgets.append(field_widget)
+
+        return container
     
+    @staticmethod
+    def _create_path_input(parent):
+        widget = QtWidgets.QWidget(parent)
+        widget._type_input_type = "path" #identify this widget
+        layout = QtWidgets.QHBoxLayout(widget)
+
+        #line edit
+        line_edit = QtWidgets.QLineEdit()
+        line_edit.setText("") #default is empty
+        layout.addWidget(line_edit, 1)
+        
+        #file browse button
+        file_btn = QtWidgets.QPushButton("Select file")
+        layout.addWidget(file_btn)
+
+        #dir browse button
+        dir_btn = QtWidgets.QPushButton("Select dir")
+        layout.addWidget(dir_btn)
+
+        widget._line_edit = line_edit #store for value retrieval
+
+        def browse_file():
+            file_path, _ = QtWidgets.QFileDialog.getOpenFileName(widget, "Select File")
+            if file_path:
+                line_edit.setText(file_path)
+        
+        def browse_dir():
+            dir_path = QtWidgets.QFileDialog.getExistingDirectory(widget, "Select Directory")
+            if dir_path:
+                line_edit.setText(dir_path)
+
+        file_btn.clicked.connect(browse_file)
+        dir_btn.clicked.connect(browse_dir)
+
+        return widget
+
     @staticmethod
     def _create_fallback_input(parent):
         widget = QtWidgets.QLineEdit(parent)
@@ -367,6 +446,9 @@ class TypeInputFactory:
         elif isinstance(widget, QtWidgets.QLineEdit):
             widget.setText(str(value))
         elif hasattr(widget, '_type_input_type'):
+            if widget._type_input_type == "tuple" and isinstance(value, (tuple,list)) and len(widget._field_widgets):
+                for sub_widget, sub_value in zip(widget._field_widgets, value):
+                    TypeInputFactory._set_widget_value(sub_widget, sub_value)
             # For container widgets, we'd need more complex logic
             # For now, just set text if it's a line edit fallback
             if hasattr(widget, 'setText'):

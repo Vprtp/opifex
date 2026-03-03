@@ -172,13 +172,13 @@ class Aligner(BaseModule):
     def __init__(self):
         self.name = "Aligner"
         self.description = "Module for generating subtitles from a given audio and its transcript.\n\nParameters:\n-audio: Path to the audio file\n-transcript: Text transcription of speech inside audio file\n-output: Output directory for generated SRT file"
-        self.requiredArgs = [("audio",str),("transcript",str),("output",str)]
-        self.returnedDataTypes = [("textgridOutput",str),("srtOutput",str)]
+        self.requiredArgs = [("audio",Path),("transcript",str),("output",Path)]
+        self.returnedDataTypes = [("textgridOutput",Path),("srtOutput",Path)]
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            paths = generateSubtitles(kwargs["audio"],kwargs["transcript"],kwargs["output"])
-            return ModuleResultType(None,{"textgridOutput":paths[0],"srtOutput":paths[1]})
+            paths = generateSubtitles(str(kwargs["audio"].absolute()),kwargs["transcript"],str(kwargs["output"].absolute()))
+            return ModuleResultType(None,{"textgridOutput":Path(paths[0]),"srtOutput":Path(paths[1])})
         except Exception as e:
             return ModuleResultType(e,{})

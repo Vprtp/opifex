@@ -2,6 +2,7 @@ import requests
 from random import choice
 from bs4 import BeautifulSoup
 import os
+from pathlib import Path
 import urllib.request
 import urllib.parse
 from basemodule import BaseModule, ModuleResultType
@@ -86,13 +87,13 @@ class ImageFinder(BaseModule):
     def __init__(self):
         self.name = "ImageFinder"
         self.description = "Module that finds and downloads online images onto a given directory.\n\nParameters:\n-search: Search terms for the requested images\n-destDir: Directory where images will be downloaded to"
-        self.requiredArgs = [("search",str), ("destDir",str)]
+        self.requiredArgs = [("search",str), ("destDir",Path)]
         self.returnedDataTypes = []
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            findPictures(kwargs["search"], kwargs["destDir"], config.imageSearchProvider)
+            findPictures(kwargs["search"], str(kwargs["destDir"].absolute()), config.imageSearchProvider)
             return ModuleResultType(None,{})
         except Exception as e:
             return ModuleResultType(e,{})

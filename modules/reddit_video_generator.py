@@ -3,6 +3,7 @@ import reddit
 from basemodule import BaseModule, ModuleResultType
 import traceback
 import simple_video_generator as svideo
+from pathlib import Path
 
 def generate(url:str, commsOrDesc:bool, accountName:str):
     print("REDDIT VIDEO GENERATOR")
@@ -28,12 +29,13 @@ class RedditVideoGenerator(BaseModule):
         self.name = "RedditVideoGenerator"
         self.description = "Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated)\n\nParameters:\n-url: URL to the Reddit post\n-commentsOrDesc: whether to generate multiple videos based on the comments (True) or to generate one video from the post's description (False)\n-accountName: credits that will be shown in the video"
         self.requiredArgs = [("url",str),("commentsOrDesc",bool),("accountName",str)]
-        self.returnedDataTypes = [("paths",list[str])]
+        self.returnedDataTypes = [("paths",list[Path])]
         self.dependencies = ["Reddit","SimpleVideoGenerator","URLunshortener"]
     
     def execute(self, version:str, **kwargs):
         try:
-            paths:list[str]= generate(kwargs["url"],kwargs["commentsOrDesc"],kwargs["accountName"])
+            pathsTemp:list[str]= generate(kwargs["url"],kwargs["commentsOrDesc"],kwargs["accountName"])
+            paths:list[Path] = [Path(item) for item in pathsTemp]
             return ModuleResultType(None,{"paths":paths})
         except Exception as e:
             print(traceback.format_exc())

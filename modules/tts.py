@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import subprocess
 import time
 import re
@@ -116,7 +117,7 @@ def cleanText(original:str, allowed:list[str]=allowedChars_EN, htmlCodes:dict[st
     filtered = ''.join([char for char in filtered if char in allowed])
     return filtered
 
-def generate(text: str, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lenghtScale:float = 1.2) -> str:
+def generate(text: str, clean:bool = True, textVoice: str = model, destination: str = destinationPath, piper: str = piperLocation, cleanIterations:int = 2, speed:float = 0.9, noiseScale:float = 0.667, lengthScale:float = 1.2) -> str:
     timestamp: int = int(time.time())
     
     # Create the output directory
@@ -125,11 +126,11 @@ def generate(text: str, clean:bool = True, textVoice: str = model, destination: 
     
     textDestination: str = destination.format(time=timestamp, fileName=f"speech{int(time.time()*1000)%1000}")
     
-    print(f"piper: '{piper}' clean: '{clean}' textVoice: '{textVoice}' destination: '{destination}' cleanIterations: {cleanIterations} speed: {speed} noiseScale: {noiseScale} lenghtScale: {lenghtScale}")
+    print(f"piper: '{piper}' clean: '{clean}' textVoice: '{textVoice}' destination: '{destination}' cleanIterations: {cleanIterations} speed: {speed} noiseScale: {noiseScale} lengthScale: {lengthScale}")
 
     if clean:
         text = cleanText(text)
-        for i in range(cleanIterations): #generate and delete the file multiple times and then take the last one in consideration
+        for _ in range(cleanIterations): #generate and delete the file multiple times and then take the last one in consideration
             if os.path.exists(textDestination):
                 os.remove(textDestination)
             
@@ -140,7 +141,7 @@ def generate(text: str, clean:bool = True, textVoice: str = model, destination: 
                     "--output_file", textDestination,
                     "--speed", str(speed),
                     "--noise_scale", str(noiseScale),
-                    "--lenght_scale", str(lenghtScale),
+                    "--length_scale", str(lengthScale),
                 ],
                 input=text.encode(),
                 check=True, 
@@ -153,7 +154,7 @@ def generate(text: str, clean:bool = True, textVoice: str = model, destination: 
                 "--output_file", textDestination,
                 "--speed", str(speed),
                 "--noise_scale", str(noiseScale),
-                "--lenght_scale", str(lenghtScale),
+                "--length_scale", str(lengthScale),
             ],
             input=text.encode(),
             check=True, 
@@ -166,12 +167,12 @@ class TTS(BaseModule):
         self.name = "TTS"
         self.description = "Module for generating speech from a given text.\n\nParameters:\n-text: Text to run through the model, which will become speech"
         self.requiredArgs = [("text",str)]
-        self.returnedDataTypes = [("destination",str)]
+        self.returnedDataTypes = [("destination",Path)]
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            paths = generate(kwargs["text"])
-            return ModuleResultType(None,{"titleDestination":paths[0],"textDestination":paths[1]})
+            path = generate(kwargs["text"])
+            return ModuleResultType(None,{"destination":Path(path)})
         except Exception as e:
             return ModuleResultType(e,{})

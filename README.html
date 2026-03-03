@@ -29,7 +29,7 @@ th { background: #f6f8fa; font-weight: 600; }
 </head>
 <body class="markdown-body">
     <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>Manual for version <code>0.1.6</code>.</p>
+<p>Manual for version <code>0.1.7</code>.</p>
 <p align="center">
   <a href="source/img/logo.png">
     <img src="source/img/logo.png" width="200" style="max-width: 100%;">
@@ -46,7 +46,7 @@ th { background: #f6f8fa; font-weight: 600; }
 <p>Start Opifex.</p>
 <div class="highlight highlight-source-shell"><pre>bash main.sh</pre></div>
 <div class="markdown-heading"><h3 class="heading-element">For other Linux distributions:</h3><a id="user-content-for-other-linux-distributions" class="anchor" aria-label="Permalink: For other Linux distributions:" href="#for-other-linux-distributions"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p><strong>Make sure that the following system packages are installed on your system:</strong></p>
+<p><strong>Make sure that the following system packages, or compatible alternatives, are installed on your system:</strong></p>
 <ul>
 <li><em>wget</em></li>
 <li><em>libxcb-xinerama0</em></li>
@@ -57,6 +57,9 @@ th { background: #f6f8fa; font-weight: 600; }
 <li><em>libxcb-keysyms1</em></li>
 <li><em>libxcb-render-util0</em></li>
 <li><em>libxcb-shape0</em></li>
+<li><em>xvfb</em></li>
+<li>
+<em>FFmpeg</em> (with the <em>x11grab</em> demuxer)</li>
 </ul>
 <p><strong>If they're not, please install them by your preferred means before proceeding, or your Opifex installation won't work properly.</strong></p>
 <p>Clone the repository.</p>
@@ -114,17 +117,25 @@ By executing a module, you will be running code on your machine like any other p
 <td>Aligner</td>
 <td>alignSRT.py</td>
 <td>Module for generating subtitles from a given audio and its transcript.</td>
-<td>audio-(str) transcript-(str) output-(str)</td>
-<td>textgridOutput-(str) srtOutput-(str)</td>
+<td>audio-(Path) transcript-(str) output-(Path)</td>
+<td>textgridOutput-(Path) srtOutput-(Path)</td>
 <td>N/A</td>
 </tr>
 <tr>
 <td>ImageFinder</td>
 <td>image_finder.py</td>
 <td>Module that finds and downloads online images onto a given directory.</td>
-<td>search-(str) destDir-(str)</td>
+<td>search-(str) destDir-(Path)</td>
 <td>N/A</td>
 <td>N/A</td>
+</tr>
+<tr>
+<td>NewsVideoGenerator</td>
+<td>news_video.py</td>
+<td>Module that generates a news-broadcast style video.</td>
+<td>broadcastName-(str) articles-(list) destination-(Path)</td>
+<td>N/A</td>
+<td>RecordPage TTS</td>
 </tr>
 <tr>
 <td>RSS</td>
@@ -137,9 +148,9 @@ By executing a module, you will be running code on your machine like any other p
 <tr>
 <td>RecordPage</td>
 <td>record.py</td>
-<td>Module that records a video of an HTML template with given parameter values. Note that the template's animations in the video might look off, depending on the host machine's performance.</td>
-<td>template-(str) data-(dict) size-(tuple) duration-(float) fps-(int)</td>
-<td>destination-(str)</td>
+<td>Module that records a video of an HTML template with given parameter values.</td>
+<td>template-(Path) data-(dict) size-(tuple) duration-(float) fps-(int)</td>
+<td>destination-(Path)</td>
 <td>ScreenshotPage</td>
 </tr>
 <tr>
@@ -162,8 +173,8 @@ By executing a module, you will be running code on your machine like any other p
 <td>ScreenshotPage</td>
 <td>screenshot.py</td>
 <td>Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image.</td>
-<td>template-(str) data-(dict) size-(tuple)</td>
-<td>destination-(str)</td>
+<td>template-(Path) data-(dict) size-(tuple)</td>
+<td>destination-(Path)</td>
 <td>N/A</td>
 </tr>
 <tr>
@@ -179,7 +190,7 @@ By executing a module, you will be running code on your machine like any other p
 <td>tts.py</td>
 <td>Module for generating speech from a given text.</td>
 <td>text-(str)</td>
-<td>destination-(str)</td>
+<td>destination-(Path)</td>
 <td>N/A</td>
 </tr>
 <tr>
@@ -194,7 +205,7 @@ By executing a module, you will be running code on your machine like any other p
 <td>VideoGenerator</td>
 <td>video.py</td>
 <td>Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path.</td>
-<td>title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str)</td>
+<td>title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(Path)</td>
 <td>N/A</td>
 <td>N/A</td>
 </tr>

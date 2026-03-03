@@ -1,6 +1,6 @@
 # Opifex
 
-Manual for version `0.1.6`.
+Manual for version `0.1.7`.
 
 <p align="center">
   <a href="source/img/logo.png">
@@ -35,7 +35,7 @@ bash main.sh
 
 ### For other Linux distributions:
 
-**Make sure that the following system packages are installed on your system:**
+**Make sure that the following system packages, or compatible alternatives, are installed on your system:**
 * _wget_
 * _libxcb-xinerama0_
 * _libxcb-cursor0_
@@ -45,6 +45,8 @@ bash main.sh
 * _libxcb-keysyms1_
 * _libxcb-render-util0_
 * _libxcb-shape0_
+* _xvfb_
+* _FFmpeg_ (with the _x11grab_ demuxer)
 
 **If they're not, please install them by your preferred means before proceeding, or your Opifex installation won't work properly.**
 
@@ -119,17 +121,18 @@ Many modules are already part of Opifex by default, but everyone is free to writ
 
 | **Module name**        | **File name**             | **Description**                                                                                                                                                                                  | **Required parameters**                                                        | **Returned values**                                              | **Dependencies**                                 |
 |------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------|
-| Aligner | alignSRT.py | Module for generating subtitles from a given audio and its transcript. | audio-(str) transcript-(str) output-(str) | textgridOutput-(str) srtOutput-(str) | N/A |
-| ImageFinder | image_finder.py | Module that finds and downloads online images onto a given directory. | search-(str) destDir-(str) | N/A | N/A |
+| Aligner | alignSRT.py | Module for generating subtitles from a given audio and its transcript. | audio-(Path) transcript-(str) output-(Path) | textgridOutput-(Path) srtOutput-(Path) | N/A |
+| ImageFinder | image_finder.py | Module that finds and downloads online images onto a given directory. | search-(str) destDir-(Path) | N/A | N/A |
+| NewsVideoGenerator | news_video.py | Module that generates a news-broadcast style video. | broadcastName-(str) articles-(list) destination-(Path) | N/A | RecordPage TTS |
 | RSS | rss.py | Module to fetch info from an RSS feed and its individual articles. | feedURL-(str) getFullArticle-(bool) | feedInfo-(dict) | N/A |
-| RecordPage | record.py | Module that records a video of an HTML template with given parameter values. Note that the template's animations in the video might look off, depending on the host machine's performance. | template-(str) data-(dict) size-(tuple) duration-(float) fps-(int) | destination-(str) | ScreenshotPage |
+| RecordPage | record.py | Module that records a video of an HTML template with given parameter values. | template-(Path) data-(dict) size-(tuple) duration-(float) fps-(int) | destination-(Path) | ScreenshotPage |
 | Reddit | reddit.py | Module for fetching reddit posts. | url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int) | title-(str) description-(str) upvotes-(int) comments-(list) | ScreenshotPage |
 | RedditVideoGenerator | reddit_video_generator.py | Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated) | url-(str) commentsOrDesc-(bool) accountName-(str) | paths-(list) | Reddit SimpleVideoGenerator URLunshortener |
-| ScreenshotPage | screenshot.py | Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image. | template-(str) data-(dict) size-(tuple) | destination-(str) | N/A |
+| ScreenshotPage | screenshot.py | Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image. | template-(Path) data-(dict) size-(tuple) | destination-(Path) | N/A |
 | SimpleVideoGenerator | simple_video_generator.py | Module that generates videos based on a given title and text. Returns paths to the generated videos (list of size 1 when only one video is generated) | content-(dict) accountName-(str) | paths-(list) | TTS Aligner VideoGenerator |
-| TTS | tts.py | Module for generating speech from a given text. | text-(str) | destination-(str) | N/A |
+| TTS | tts.py | Module for generating speech from a given text. | text-(str) | destination-(Path) | N/A |
 | URLunshortener | unshortenURL.py | Module that returns the final URL from redirections by a given one (thus 'unshortening' shortened URLs) | url-(str) rmpars-(bool) | url-(str) | N/A |
-| VideoGenerator | video.py | Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path. | title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(str) | N/A | N/A |
+| VideoGenerator | video.py | Module for generating a short-form video based on given title, subtitles, audio for both title and text, and a destination path. | title-(str) subtitles-(str) titleAudio-(str) textAudio-(str) destination-(Path) | N/A | N/A |
 
 ### Creating modules
 

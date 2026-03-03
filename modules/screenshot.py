@@ -153,13 +153,13 @@ class ScreenshotPage(BaseModule):
     def __init__(self):
         self.name = "ScreenshotPage"
         self.description = "Module that screenshots an HTML template with given parameter values to fill it and cleans it to be a transparent PNG. Note that model should not contain any '{' or '}' characters, if not for the parameters. Use separate stylesheet file to include CSS. Returns the path to the generated image.\n\nParameters:\n-template: Path to the HTML template\n-data: Dictionary with parameters that should be filled in the template {'Parameter name':Value}\n-size: Tuple (width, height), in pixel, that indicate the web window size to visualize the HTML template"
-        self.requiredArgs = [("template",str),("data",dict),("size",tuple[int,int])]
-        self.returnedDataTypes = [("destination",str)]
+        self.requiredArgs = [("template",Path),("data",dict),("size",tuple[int,int])]
+        self.returnedDataTypes = [("destination",Path)]
         self.dependencies = []
     
     def execute(self, version:str, **kwargs):
         try:
-            a:str = process_html_to_image(kwargs["template"],kwargs["data"],kwargs["size"])
-            return ModuleResultType(None,{"destination":a})
+            a:str = process_html_to_image(str(kwargs["template"].absolute()),kwargs["data"],kwargs["size"])
+            return ModuleResultType(None,{"destination":Path(a)})
         except Exception as e:
             return ModuleResultType(e,{})

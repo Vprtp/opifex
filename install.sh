@@ -24,6 +24,8 @@ SYSTEM_DEPS=(
     "libxcb-keysyms1"
     "libxcb-render-util0"
     "libxcb-shape0"
+    "xvfb"
+    "ffmpeg"
 )
 
 ARCHIVE_URL="https://pub-1fc150304f4047f387be7b92d6b089a9.r2.dev/source.tar.gz"
