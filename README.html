@@ -29,7 +29,7 @@ th { background: #f6f8fa; font-weight: 600; }
 </head>
 <body class="markdown-body">
     <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>Manual for version <code>0.1.7</code>.</p>
+<p>Manual for version <code>0.1.8</code>.</p>
 <p align="center">
   <a href="source/img/logo.png">
     <img src="source/img/logo.png" width="200" style="max-width: 100%;">
@@ -69,7 +69,22 @@ th { background: #f6f8fa; font-weight: 600; }
 <div class="highlight highlight-source-shell"><pre>bash install.sh --no-system-deps</pre></div>
 <p>Start Opifex.</p>
 <div class="highlight highlight-source-shell"><pre>bash main.sh</pre></div>
-<div class="markdown-heading"><h3 class="heading-element">Example use case: generating a short-form storytelling video from a Reddit post</h3><a id="user-content-example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post" class="anchor" aria-label="Permalink: Example use case: generating a short-form storytelling video from a Reddit post" href="#example-use-case-generating-a-short-form-storytelling-video-from-a-reddit-post"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<div class="markdown-heading"><h3 class="heading-element">Example use case 1: generating a news broadcast-style video from an RSS feed</h3><a id="user-content-example-use-case-1-generating-a-news-broadcast-style-video-from-an-rss-feed" class="anchor" aria-label="Permalink: Example use case 1: generating a news broadcast-style video from an RSS feed" href="#example-use-case-1-generating-a-news-broadcast-style-video-from-an-rss-feed"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p><a href="https://www.youtube.com/watch?v=Q_c6IrQl3wQ" rel="nofollow">Showcase (YouTube)</a></p>
+<ol>
+<li>Find the URL to an RSS feed of a newspaper you like</li>
+<li>Open Opifex in GUI mode with <code>bash main.sh</code> (See the <code>GUI mode</code> section below for instructions on how to use it).</li>
+<li>Select the <code>RSSVideoGenerator</code> module.</li>
+<li>Insert the feed's URL inside the <code>url</code> parameter's text box.</li>
+<li>Insert the name you want to give to your personal news broadcast in the <code>broadcastName</code> parameter.</li>
+<li>Click on the <code>Execute</code> button, then wait for completion (depending on the number and length of the fetched articles, and the hardware of your machine, this might take several minutes or even hours).</li>
+</ol>
+<p>In the end, something like this will be printed in the console:</p>
+<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'destination': PosixPath('/path/to/file.mp4')]}&gt;
+</code></pre>
+<p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
+<div class="markdown-heading"><h3 class="heading-element">Example use case 2: generating a short-form storytelling video from a Reddit post</h3><a id="user-content-example-use-case-2-generating-a-short-form-storytelling-video-from-a-reddit-post" class="anchor" aria-label="Permalink: Example use case 2: generating a short-form storytelling video from a Reddit post" href="#example-use-case-2-generating-a-short-form-storytelling-video-from-a-reddit-post"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
+<p><a href="https://www.youtube.com/watch?v=Euea7eZQ1_Q" rel="nofollow">Showcase (YouTube)</a></p>
 <ol>
 <li>Find a Reddit post with a long enough description that will act as the story (for example, posts in the <em>r/stories</em> subreddit work particularly well).</li>
 <li>Open Opifex in GUI mode with <code>bash main.sh</code> (See the <code>GUI mode</code> section below for instructions on how to use it).</li>
@@ -79,7 +94,7 @@ th { background: #f6f8fa; font-weight: 600; }
 <li>Click on the <code>Execute</code> button, then wait for completion (depending on how long the story is, this might take a few minutes).</li>
 </ol>
 <p>In the end, something like this will be printed in the console:</p>
-<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'paths': ['/path/to/file.mp4']}&gt;
+<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'paths': [PosixPath('/path/to/file.mp4')]}&gt;
 </code></pre>
 <p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
 <div class="markdown-heading"><h2 class="heading-element">Installation (in detail)</h2><a id="user-content-installation-in-detail" class="anchor" aria-label="Permalink: Installation (in detail)" href="#installation-in-detail"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
@@ -135,15 +150,23 @@ By executing a module, you will be running code on your machine like any other p
 <td>Module that generates a news-broadcast style video.</td>
 <td>broadcastName-(str) articles-(list) destination-(Path)</td>
 <td>N/A</td>
-<td>RecordPage TTS</td>
+<td>RecordPage ScreenshotPage TTS</td>
 </tr>
 <tr>
 <td>RSS</td>
 <td>rss.py</td>
 <td>Module to fetch info from an RSS feed and its individual articles.</td>
-<td>feedURL-(str) getFullArticle-(bool)</td>
+<td>feedURL-(str) getFullArticle-(bool) smartFilter-(bool)</td>
 <td>feedInfo-(dict)</td>
 <td>N/A</td>
+</tr>
+<tr>
+<td>RSSVideoGenerator</td>
+<td>rss_video.py</td>
+<td>Module that generates a news-broadcast style video from a given RSS feed. Returns the path to the generated video.</td>
+<td>broadcastName-(str) url-(str) quickFetch-(bool)</td>
+<td>destination-(Path)</td>
+<td>RSS NewsVideoGenerator ImageFinder</td>
 </tr>
 <tr>
 <td>RecordPage</td>

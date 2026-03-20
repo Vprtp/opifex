@@ -1,6 +1,6 @@
 # Opifex
 
-Manual for version `0.1.7`.
+Manual for version `0.1.8`.
 
 <p align="center">
   <a href="source/img/logo.png">
@@ -69,7 +69,28 @@ Start Opifex.
 bash main.sh
 ```
 
-### Example use case: generating a short-form storytelling video from a Reddit post
+### Example use case 1: generating a news broadcast-style video from an RSS feed
+
+[Showcase (YouTube)](https://www.youtube.com/watch?v=Q_c6IrQl3wQ)
+
+1. Find the URL to an RSS feed of a newspaper you like
+2. Open Opifex in GUI mode with `bash main.sh` (See the `GUI mode` section below for instructions on how to use it).
+3. Select the `RSSVideoGenerator` module.
+4. Insert the feed's URL inside the `url` parameter's text box.
+5. Insert the name you want to give to your personal news broadcast in the `broadcastName` parameter.
+6. Click on the `Execute` button, then wait for completion (depending on the number and length of the fetched articles, and the hardware of your machine, this might take several minutes or even hours).
+
+In the end, something like this will be printed in the console:
+
+```
+ModuleResultType: exception <None> data <{'destination': PosixPath('/path/to/file.mp4')]}>
+```
+
+where `/path/to/file.mp4` is the path to the generated video.
+
+### Example use case 2: generating a short-form storytelling video from a Reddit post
+
+[Showcase (YouTube)](https://www.youtube.com/watch?v=Euea7eZQ1_Q)
 
 1. Find a Reddit post with a long enough description that will act as the story (for example, posts in the _r/stories_ subreddit work particularly well).
 2. Open Opifex in GUI mode with `bash main.sh` (See the `GUI mode` section below for instructions on how to use it).
@@ -81,7 +102,7 @@ bash main.sh
 In the end, something like this will be printed in the console:
 
 ```
-ModuleResultType: exception <None> data <{'paths': ['/path/to/file.mp4']}>
+ModuleResultType: exception <None> data <{'paths': [PosixPath('/path/to/file.mp4')]}>
 ```
 
 where `/path/to/file.mp4` is the path to the generated video.
@@ -123,8 +144,9 @@ Many modules are already part of Opifex by default, but everyone is free to writ
 |------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------|
 | Aligner | alignSRT.py | Module for generating subtitles from a given audio and its transcript. | audio-(Path) transcript-(str) output-(Path) | textgridOutput-(Path) srtOutput-(Path) | N/A |
 | ImageFinder | image_finder.py | Module that finds and downloads online images onto a given directory. | search-(str) destDir-(Path) | N/A | N/A |
-| NewsVideoGenerator | news_video.py | Module that generates a news-broadcast style video. | broadcastName-(str) articles-(list) destination-(Path) | N/A | RecordPage TTS |
-| RSS | rss.py | Module to fetch info from an RSS feed and its individual articles. | feedURL-(str) getFullArticle-(bool) | feedInfo-(dict) | N/A |
+| NewsVideoGenerator | news_video.py | Module that generates a news-broadcast style video. | broadcastName-(str) articles-(list) destination-(Path) | N/A | RecordPage ScreenshotPage TTS |
+| RSS | rss.py | Module to fetch info from an RSS feed and its individual articles. | feedURL-(str) getFullArticle-(bool) smartFilter-(bool) | feedInfo-(dict) | N/A |
+| RSSVideoGenerator | rss_video.py | Module that generates a news-broadcast style video from a given RSS feed. Returns the path to the generated video. | broadcastName-(str) url-(str) quickFetch-(bool) | destination-(Path) | RSS NewsVideoGenerator ImageFinder |
 | RecordPage | record.py | Module that records a video of an HTML template with given parameter values. | template-(Path) data-(dict) size-(tuple) duration-(float) fps-(int) | destination-(Path) | ScreenshotPage |
 | Reddit | reddit.py | Module for fetching reddit posts. | url-(str) upvotesMin-(float) wordsMin-(int) checkMax-(int) | title-(str) description-(str) upvotes-(int) comments-(list) | ScreenshotPage |
 | RedditVideoGenerator | reddit_video_generator.py | Module that generates a video, or multiple videos, based on the content contained in a given Reddit post. Returns paths to the generated videos (list of size 1 when only one video is generated) | url-(str) commentsOrDesc-(bool) accountName-(str) | paths-(list) | Reddit SimpleVideoGenerator URLunshortener |

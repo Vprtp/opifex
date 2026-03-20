@@ -14,14 +14,15 @@ import config
 tempFiles: list[str] = []
 tempFolder: str = config.tempFolder
 
-def clearTemp(files: list[str] = tempFiles) -> None:
+def clearTemp() -> None:
     """Clean up temporary files created during execution."""
-    for file in files:
+    for file in tempFiles:
         try:
             os.remove(file)
             print(f"Cleaned up temporary file: {file}")
         except Exception as e:
             print(f"WARNING: unable to delete temporary file {file}: {str(e)}")
+    tempFiles.clear()
 
 def make_size_even(window_size:tuple[int,int]):
     w, h = window_size
@@ -46,20 +47,30 @@ def find_ffmpeg() -> str: #this is necessary because the conda build of ffmpeg d
     # Fallback to any ffmpeg in PATH (but may fail)
     return 'ffmpeg'
 
-def start_virtual_display(width, height):
-    display_num = ":99"
-    # Capture stderr so we can see why Xvfb might crash
-    xvfb = subprocess.Popen(
-        ["Xvfb", display_num, "-screen", "0", f"{width}x{height}x24", "-ac"],
-        stderr=subprocess.PIPE,
-        stdout=subprocess.DEVNULL
-    )
-    time.sleep(0.5)
-    
-    # Check if Xvfb died immediately
-    if xvfb.poll() is not None:
-        _, stderr = xvfb.communicate()
-        raise RuntimeError(f"Xvfb failed to start: {stderr.decode()}")
+def start_virtual_display(width, height) -> tuple[subprocess.Popen, str]:
+    int_display_num:int = 99
+    run:bool = True
+    while run:
+        run = False
+        if int_display_num < 0: raise RuntimeError("No free display found for Xvfb.")
+        display_num = f":{int_display_num}"
+        # Capture stderr so we can see why Xvfb might crash
+        xvfb = subprocess.Popen(
+            ["Xvfb", display_num, "-screen", "0", f"{width}x{height}x24", "-ac"],
+            stderr=subprocess.PIPE,
+            stdout=subprocess.DEVNULL
+        )
+        time.sleep(0.5)
+        
+        # Check if Xvfb died immediately
+        if xvfb.poll() is not None:
+            _, stderr = xvfb.communicate()
+            if "Server is already active for display" in stderr.decode(): #try again with a lower display_num if Xvfb is already active for that display
+                run = True
+                int_display_num += -1
+                print(f"Xvfb server was found active on display {int_display_num+1}, trying again on display {int_display_num}...")
+            else:
+                raise RuntimeError(f"Xvfb failed to start: {stderr.decode()}")
     
     return xvfb, display_num
 

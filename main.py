@@ -10,7 +10,7 @@ import subprocess
 import pathlib
 
 PROJECTNAME = "Opifex"
-VERSION = "0.1.7" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
+VERSION = "0.1.8" #current version to show and use in the project, [MAIN].[MINOR].[PATCH]
 AUTHORS = "prtp (Vprtp on GitHub)"
 
 def clearTemp(dir:str=config.tempFolder):
@@ -147,7 +147,7 @@ class TypeInputFactory:
     def _create_int_input(parent):
         widget = QtWidgets.QSpinBox(parent)
         widget.setValue(0)  # Default 0
-        widget.setRange(-1000000, 1000000)
+        widget.setRange(-2147483647, 2147483647)
         return widget
     
     @staticmethod

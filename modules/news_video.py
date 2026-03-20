@@ -1,7 +1,9 @@
 import time
 import shutil
+from selenium.common.exceptions import SessionNotCreatedException
 from pathlib import Path
 import record
+import screenshot
 import tts
 from basemodule import BaseModule, ModuleResultType
 from lib.ffmpeghandler import *
@@ -47,7 +49,8 @@ def generate(newsName:str, articles:list[Article], endPath:str, showTitle:bool=T
     #this will get changed to the title's background video size later if a title is generated
     newsSize:tuple[int,int]=(1920,1080) 
     newsFps:int = 30
-    
+    seleniumExecutionAttempts:int = 3 #if selenium crashes, tries to reboot it this number of times. often it crashes for no reason so this might be useful. 
+
     print("Generating title video...")
     #generate title
     titlePath:str = genTempPath("mp4")
@@ -64,25 +67,48 @@ def generate(newsName:str, articles:list[Article], endPath:str, showTitle:bool=T
     #generate individual article videos
     articleTitles:list[str] = [art.title for art in articles]
     articleVideoPaths:list[str] = []
+    artNum:int = 0
     for article in articles:
-        print(f"Generating video for article '{article.title}'. This may take several minutes, please be patient...")
+        artNum += 1
+        print(f"Generating video for article ({artNum}/{len(articles)}) '{article.title}'. This may take several minutes, please be patient...")
         #generate tts
         ttsPath:str = tts.generate(article.text)
         ttsLenght:float = FFmpeg.getLength(ttsPath)
         #get list of all article titles except for this one
-        otherArticles:list[str] = articleTitles
+        otherArticles:list[str] = articleTitles.copy()
         otherArticles.remove(article.title)
         #generate the news overlay
-        overlayPath = record.process_html_to_video(graphicModel, 
-                                                   data={"article_time":time.strftime('%d/%m %H:%M', time.localtime(article.publishTime)),
-                                                         "article_title":article.title,
-                                                         "article_source":article.source,
-                                                         "other_articles":" | ".join(otherArticles)},
-                                                   window_size=newsSize,
-                                                   duration=ttsLenght,
-                                                   fps=newsFps)
+        print(f"({artNum}) Generating overlay...")
+        overlayPath:str = ""
+        for i in range(seleniumExecutionAttempts):
+            try:
+                overlayPath = record.process_html_to_video(graphicModel, 
+                                                           data={"article_time":time.strftime('%d/%m %H:%M', time.localtime(article.publishTime)),
+                                                                 "article_title":article.title,
+                                                                 "article_source":article.source,
+                                                                 "other_articles":" | ".join(otherArticles)},
+                                                           window_size=newsSize,
+                                                           duration=ttsLenght,
+                                                           fps=newsFps)
+                break
+            except SessionNotCreatedException:
+                print(f"Selenium failed at creating a session. Trying again, {seleniumExecutionAttempts-i} attempts left.")
+        
+        #if there's no image, provide a placeholder image
+        if len(article.images) == 0:
+            print(f"({artNum}) Generating a fallback image...")
+            a:str = ""
+            for i in range(seleniumExecutionAttempts):
+                try:
+                    a = screenshot.process_html_to_image(config.noMediaHtmlTemplate, {"name":newsName, "message":"No image available."}, window_size=newsSize)
+                    break
+                except SessionNotCreatedException:
+                    print(f"Selenium failed at creating a session. Trying again, {seleniumExecutionAttempts-i} attempts left.")
+ 
+            article.images.append(a)
 
         #resize images
+        print(f"({artNum}) Resizing images...")
         images:list[str] = []
         for img in article.images:
             imgOld:str = img
@@ -92,20 +118,15 @@ def generate(newsName:str, articles:list[Article], endPath:str, showTitle:bool=T
             images.append(img)
 
         #generate video of background images
+        print(f"({artNum}) Generating background video...")
         singularImageLenght:float = ttsLenght/len(images)
-        imageVideoPaths:list[str] = [genTempPath("mp4") for img in images]
-        for i in range(len(images)): #generate single videos from images
-            FFmpeg.imageToVideo(images[i], imageVideoPaths[i], singularImageLenght, framerate=newsFps)
         fadeDuration:float = 0.8
         if singularImageLenght <= 8.0:
             fadeDuration = singularImageLenght/10
-        fadedImageVideoPaths:list[str] = [genTempPath("mp4") for img in images]
-        for i in range(len(imageVideoPaths)): #generate single videos with fade duration
-            effect:str = fadeEffect.format(imgDuration=singularImageLenght, fadeDuration=fadeDuration, imgDurationMinusFadeDuration=singularImageLenght-fadeDuration)
-            FFmpeg.applyVideoEffect(imageVideoPaths[i], fadedImageVideoPaths[i], effect)
         bgVideo:str = genTempPath("mp4")
-        FFmpeg.concatenate(fadedImageVideoPaths, bgVideo, reencode=True) #create final background video for the article
+        FFmpeg.imagesToVideo(images, [singularImageLenght]*len(images), fadeDuration, newsFps, bgVideo)
         #overlay news to background and add audio
+        print(f"({artNum}) Finalizing this article...")
         articlePathNoAudio:str = genTempPath("mp4")
         FFmpeg.overlayVideo(bgVideo, overlayPath, articlePathNoAudio)
         articlePath:str = genTempPath("mp4")
@@ -114,7 +135,7 @@ def generate(newsName:str, articles:list[Article], endPath:str, showTitle:bool=T
 
     #apply fade effect to individual article videos
     print("Applying effects...")
-    fadedArticleVideos:list[str] = [genTempPath("mp4") for vid in articleVideoPaths]
+    fadedArticleVideos:list[str] = [genTempPath("mp4") for _ in articleVideoPaths]
     fadeDuration:float = 1.0
     for i in range(len(articleVideoPaths)):
         vidLenght:float = FFmpeg.getLength(articleVideoPaths[i])
@@ -138,7 +159,7 @@ class NewsVideoGenerator(BaseModule):
         self.description = "Module that generates a news-broadcast style video.\n\nParameters:\n-broadcastName: Name for your news 'broadcast', which will be shown at the beginning of the video\n-articles: List of articles that will be shown, each with the tuple format (ARTICLE TITLE-str, ARTICLE TEXT-str, IMAGES USED IN THE VIDEO-list[Path], ARTICLE SOURCE-str, PUBLISH TIME IN UNIX TIMESTAMP-int)\n-destination: Path to the video that will be generated"
         self.requiredArgs = [("broadcastName",str), ("articles",list[tuple[str, str, list[Path], str, int]]), ("destination", Path)]
         self.returnedDataTypes = []
-        self.dependencies = ["RecordPage", "TTS"]
+        self.dependencies = ["RecordPage", "ScreenshotPage", "TTS"]
     
     def execute(self, version:str, **kwargs):
         try:

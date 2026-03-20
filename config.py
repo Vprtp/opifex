@@ -59,6 +59,7 @@ dingSound:str = sourceFolder+"audio/ding.wav"
 
 titleHtmlTemplate:str = sourceFolder+"web/reddit.html"
 newsHtmlTemplate:str = sourceFolder+"web/news.html"
+noMediaHtmlTemplate:str = sourceFolder+"web/noimage.html"
 
 imageSearchProvider:str = "https://www.ecosia.org/images?q={terms}" #url for image search provider. ecosia is used because downloading images with it is more straightforward
 

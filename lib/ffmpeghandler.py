@@ -467,6 +467,52 @@ class FFmpeg:
             tempFiles.append(endPath)
 
     @staticmethod
+    def imagesToVideo(images: list[str], durations: list[float], fade_duration: float, framerate: int, output_path: str, isTemp=True) -> None:
+        """
+        Create a video from multiple images, each shown for a specified duration,
+        with fade-in and fade-out on each segment. All segments are concatenated.
+        
+        Args:
+            images: List of image file paths.
+            durations: List of durations (seconds) for each image (same length as images).
+            fade_duration: Duration of fade in/out for each segment.
+            framerate: Output framerate.
+            output_path: Destination video file.
+            isTemp: If True, output_path will be added to tempFiles.
+        """
+        if len(images) != len(durations):
+            raise ValueError("images and durations must have same length")
+    
+        # Build input arguments: each image as a separate input with loop
+        cmd = ["ffmpeg", "-v", "error"]
+        for img, dur in zip(images, durations):
+            cmd.extend(["-loop", "1", "-t", str(dur), "-i", img])
+    
+        # Build filtergraph
+        filter_parts = []
+        concat_inputs = []
+        for i, (img, dur) in enumerate(zip(images, durations)):
+            # Apply fade in at start, fade out at end
+            fade_in = f"fade=t=in:st=0:d={fade_duration}"
+            fade_out = f"fade=t=out:st={dur - fade_duration}:d={fade_duration}"
+            filter_parts.append(f"[{i}:v]{fade_in},{fade_out}[v{i}]")
+            concat_inputs.append(f"[v{i}]")
+    
+        concat_filter = f"{''.join(concat_inputs)}concat=n={len(images)}:v=1:a=0[bg]"
+        filter_complex = ";".join(filter_parts + [concat_filter])
+    
+        cmd.extend(["-filter_complex", filter_complex,
+                    "-map", "[bg]", "-r", str(framerate),
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-preset", "fast", "-crf", "23",  # optional quality tuning
+                    output_path])
+    
+        subprocess.run(cmd, check=True)
+    
+        if isTemp:
+            tempFiles.append(output_path)
+
+    @staticmethod
     def applyVideoEffect(sourcePath:str, endPath:str, filter:str, isTemp=True) -> None:
         """
         Apply given filter effect (in standard FFmpeg notation) to a given video.
