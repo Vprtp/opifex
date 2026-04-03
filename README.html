@@ -29,7 +29,7 @@ th { background: #f6f8fa; font-weight: 600; }
 </head>
 <body class="markdown-body">
     <div class="markdown-heading"><h1 class="heading-element">Opifex</h1><a id="user-content-opifex" class="anchor" aria-label="Permalink: Opifex" href="#opifex"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
-<p>Manual for version <code>0.1.8</code>.</p>
+<p>Manual for version <code>0.1.9</code>.</p>
 <p align="center">
   <a href="source/img/logo.png">
     <img src="source/img/logo.png" width="200" style="max-width: 100%;">
@@ -58,6 +58,7 @@ th { background: #f6f8fa; font-weight: 600; }
 <li><em>libxcb-render-util0</em></li>
 <li><em>libxcb-shape0</em></li>
 <li><em>xvfb</em></li>
+<li><em>xdg-utils</em></li>
 <li>
 <em>FFmpeg</em> (with the <em>x11grab</em> demuxer)</li>
 </ul>
@@ -80,9 +81,10 @@ th { background: #f6f8fa; font-weight: 600; }
 <li>Click on the <code>Execute</code> button, then wait for completion (depending on the number and length of the fetched articles, and the hardware of your machine, this might take several minutes or even hours).</li>
 </ol>
 <p>In the end, something like this will be printed in the console:</p>
-<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'destination': PosixPath('/path/to/file.mp4')]}&gt;
+<pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'destination': PosixPath('/path/to/file.mp4')}&gt;
 </code></pre>
 <p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
+<p>This path will also be displayed graphically (See <code>GUI mode</code> section below).</p>
 <div class="markdown-heading"><h3 class="heading-element">Example use case 2: generating a short-form storytelling video from a Reddit post</h3><a id="user-content-example-use-case-2-generating-a-short-form-storytelling-video-from-a-reddit-post" class="anchor" aria-label="Permalink: Example use case 2: generating a short-form storytelling video from a Reddit post" href="#example-use-case-2-generating-a-short-form-storytelling-video-from-a-reddit-post"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p><a href="https://www.youtube.com/watch?v=Euea7eZQ1_Q" rel="nofollow">Showcase (YouTube)</a></p>
 <ol>
@@ -97,6 +99,7 @@ th { background: #f6f8fa; font-weight: 600; }
 <pre><code>ModuleResultType: exception &lt;None&gt; data &lt;{'paths': [PosixPath('/path/to/file.mp4')]}&gt;
 </code></pre>
 <p>where <code>/path/to/file.mp4</code> is the path to the generated video.</p>
+<p>This path will also be displayed graphically (See <code>GUI mode</code> section below).</p>
 <div class="markdown-heading"><h2 class="heading-element">Installation (in detail)</h2><a id="user-content-installation-in-detail" class="anchor" aria-label="Permalink: Installation (in detail)" href="#installation-in-detail"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>After downloading (or cloning) the repository, Opifex can be properly set up by running <code>bash install.sh</code> in the main directory.</p>
 <p>The script will download various large assets (used by the program and default modules) that are too big to host on GitHub and it will set up a <em>Conda</em> environment for the program (based on <code>environment.yml</code>), as well as install Conda (precisely <em>Miniconda3</em>) if no Conda version was found on the system.<br>
@@ -296,17 +299,18 @@ This is the structure of the <code>ModuleResultType</code> class:</p>
 <p>Opifex can run in an intuitive <strong>GUI mode</strong>:</p>
 <p align="center">
   <a href="source/img/opifex-gui.png">
-    <img src="source/img/opifex-gui.png" width="600" style="max-width: 100%;">
+    <img src="source/img/opifex-gui.png" width="800" style="max-width: 100%;">
   </a>
 </p>
 <p>The interface is divided into specialized sections:</p>
 <ul>
 <li>On the left, there's a list of all loaded <strong>modules</strong>. Each module can be inspected by <em>double clicking</em>. Modules can be reloaded by pressing the <code>Reload</code> button.</li>
-<li>On the right, details of the <strong>selected module</strong> are displayed. You can <em>execute</em> the selected module by pressing the <code>Execute</code> button, after having provided all of the selected module's parameters.</li>
+<li>In the middle, details of the <strong>selected module</strong> are displayed. You can <em>execute</em> the selected module by pressing the <code>Execute</code> button, after having provided all of the selected module's parameters.</li>
+<li>On the right, <strong>module results</strong> will be displayed after a module has finished execution.</li>
 <li>On the bottom, a <strong>console</strong> shows all output from modules and Opifex itself (after startup, all <code>stdout</code> and <code>stderr</code> calls get redirected here). The console can be cleared by pressing the <code>Clear</code> button.</li>
 <li>On the top, a <strong>toolbar</strong> allows you to have quick access to the <em>configurations file</em>, to this page and to a quick <em>info page</em>.</li>
 </ul>
-<p>Output from <strong>executed modules</strong> will be printed to console (at least for now).</p>
+<p>Output from <strong>executed modules</strong> will also be printed to console.</p>
 <div class="markdown-heading"><h2 class="heading-element">Settings</h2><a id="user-content-settings" class="anchor" aria-label="Permalink: Settings" href="#settings"><span aria-hidden="true" class="octicon octicon-link"></span></a></div>
 <p>Settings for Opifex can be changed in the <code>config.py</code> file, which can be easily accessed from the <code>Config</code> button in GUI mode's toolbar.</p>
 <p>Opifex <strong>must be restarted</strong> after any setting change for the changes to take effect.</p>

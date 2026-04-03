@@ -25,6 +25,7 @@ SYSTEM_DEPS=(
     "libxcb-render-util0"
     "libxcb-shape0"
     "xvfb"
+    "xdg-utils"
     "ffmpeg"
 )
 

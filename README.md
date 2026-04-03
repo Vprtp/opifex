@@ -1,6 +1,6 @@
 # Opifex
 
-Manual for version `0.1.8`.
+Manual for version `0.1.9`.
 
 <p align="center">
   <a href="source/img/logo.png">
@@ -46,6 +46,7 @@ bash main.sh
 * _libxcb-render-util0_
 * _libxcb-shape0_
 * _xvfb_
+* _xdg-utils_
 * _FFmpeg_ (with the _x11grab_ demuxer)
 
 **If they're not, please install them by your preferred means before proceeding, or your Opifex installation won't work properly.**
@@ -83,10 +84,12 @@ bash main.sh
 In the end, something like this will be printed in the console:
 
 ```
-ModuleResultType: exception <None> data <{'destination': PosixPath('/path/to/file.mp4')]}>
+ModuleResultType: exception <None> data <{'destination': PosixPath('/path/to/file.mp4')}>
 ```
 
 where `/path/to/file.mp4` is the path to the generated video.
+
+This path will also be displayed graphically (See `GUI mode` section below).
 
 ### Example use case 2: generating a short-form storytelling video from a Reddit post
 
@@ -106,6 +109,8 @@ ModuleResultType: exception <None> data <{'paths': [PosixPath('/path/to/file.mp4
 ```
 
 where `/path/to/file.mp4` is the path to the generated video.
+
+This path will also be displayed graphically (See `GUI mode` section below).
 
 ## Installation (in detail)
 
@@ -233,17 +238,18 @@ Opifex can run in an intuitive **GUI mode**:
 
 <p align="center">
   <a href="source/img/opifex-gui.png">
-    <img src="source/img/opifex-gui.png" width="600">
+    <img src="source/img/opifex-gui.png" width="800">
   </a>
 </p>
 
 The interface is divided into specialized sections:
 * On the left, there's a list of all loaded **modules**. Each module can be inspected by _double clicking_. Modules can be reloaded by pressing the `Reload` button.
-* On the right, details of the **selected module** are displayed. You can _execute_ the selected module by pressing the `Execute` button, after having provided all of the selected module's parameters.
+* In the middle, details of the **selected module** are displayed. You can _execute_ the selected module by pressing the `Execute` button, after having provided all of the selected module's parameters.
+* On the right, **module results** will be displayed after a module has finished execution.
 * On the bottom, a **console** shows all output from modules and Opifex itself (after startup, all `stdout` and `stderr` calls get redirected here). The console can be cleared by pressing the `Clear` button.
 * On the top, a **toolbar** allows you to have quick access to the _configurations file_, to this page and to a quick _info page_.
 
-Output from **executed modules** will be printed to console (at least for now).
+Output from **executed modules** will also be printed to console.
 
 ## Settings
 

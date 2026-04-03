@@ -5,7 +5,7 @@ import os
 p = os.path.abspath(__file__).replace(os.path.basename(__file__),"") #DO NOT change this. it's used to detect the script directory
 
 #OPIFEX CONFIGS
-windowSize:tuple[int,int] = (1000,800)
+windowSize:tuple[int,int] = (1225,800)
 manual:str = p+"README.html"
 icon:str = p+"source/img/logo.png"
 style:str = p+"source/qt/light.qss" #options: "source/qt/light.qss", "source/qt/dark.qss", "source/qt/none.qss"

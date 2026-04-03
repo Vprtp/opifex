@@ -18,7 +18,7 @@ minimumChars:int = 80 #minimum number of characters for an article to be conside
 #NOTE that these patterns were noticed by personal observation of newspapers I regularly read, thus they are very limited in number. Any suggestion or improvement is more than welcome.
 #list of patterns in strings which suggest that the whole sentence might be useless junk, case-insensitive so must be written in lowercase
 uselessSentencePatterns:list[str] = [
-    "play-arrow", "- list", "published on",
+    "play-arrow", "recommended stories", "- list", "published on",
     "first appeared on",
     "scrivici a:", "scrivici per correzioni",
     "read more:"
